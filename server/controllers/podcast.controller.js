@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const {
   buildXml,
+  combineShows,
   parseShowData
 } = require("../utils");
 
@@ -91,80 +92,15 @@ const combine = (req, rsp) => {
     });
   }
 
-  const showPromise1 = axios.get(urls[show1]);
-  const showPromise2 = axios.get(urls[show2]);
+  combineShows([urls[show1], urls[show2]])
+    .then(combinedData => {
+      const xml = buildXml(combinedData);
 
-  // Get original XML from show URL
-  Promise.all([showPromise1, showPromise2])
-    .then(shows => {
-      // Parse with xml2js asynchronously, return promise array
-      const showDataPromises = shows.map(show =>
-        xml2js.parseStringPromise(show.data)
-      );
-
-      // Resolve these to non-promise JSON data
-      Promise.all(showDataPromises)
-        .then(showDataArray => {
-          let xmlMetadata = {};
-          const channel = {};
-          const episodes = [];
-
-          for(let showData of showDataArray){
-            const {
-              xmlMetadata: showMetadata,
-              channel: showChannel,
-              episodes: showEpisodes
-            } = parseShowData(showData);
-
-            // Update metadata with new show data
-            xmlMetadata = {
-              ...xmlMetadata,
-              ...showMetadata
-            };
-
-            // If first show, borrow channel data
-            if(!channel.title){
-              for(let field in showChannel){
-                channel[field] = showChannel[field];
-              }
-            }
-            // Otherwise, append new show title and description, 
-            // and mark as explicit if any show is explicit
-            else{
-              channel.title += ` | ${showChannel.title}`;
-              channel.description += `\n\n***\n\n${showChannel.description}`;
-
-              channel["itunes:explicit"] = (
-                channel["itunes:explicit"] === "true" ||
-                showChannel["itunes:explicit"] === "true" ?
-                  "true" : "false"
-              )
-            }
-
-            // Add episodes
-            episodes.push(...showEpisodes);
-          }
-
-          // Sort episodes by date
-          episodes.forEach(e =>
-            e.dateInt = new Date(e.pubDate[0]).getTime()
-          );
-          episodes.sort((a, b) => b.dateInt - a.dateInt);
-          episodes.forEach(e => delete e.dateInt);
-
-          const xml = buildXml({
-            xmlMetadata,
-            channel,
-            episodes
-          })
-
-          rsp.set("Content-Type", "text/xml");
-          rsp.send(xml);
-        })
-      .catch(e => console.log(e));
-    });
-
-}
+      rsp.set("Content-Type", "text/xml");
+      rsp.send(xml);
+    })
+    .catch(e => console.log(e));
+};
 
 module.exports = {
   test,
