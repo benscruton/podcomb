@@ -1,5 +1,7 @@
-const controllers = {
-  podcastController: require("./podcast.controller"),
-}
+const authController = require("./auth.controller");
+const podcastController = require("./podcast.controller");
 
-module.exports = controllers;
+module.exports = {
+  authController,
+  podcastController 
+};

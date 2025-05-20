@@ -13,6 +13,8 @@ app.use(
   require("./server/routes")
 );
 
+// Connect to database
+// require("./server/config/sequelize");
+require("./server/models");
 
-
-app.listen(port, () => console.log(`Now listening on Port ${port}...`));
+app.listen(port, () => console.log(`Listening on Port ${port}...`));
