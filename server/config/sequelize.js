@@ -5,10 +5,11 @@ const sequelize = new Sequelize({
   storage: "./data/db.sqlite3",
   logging: false,
   define: {
+    // Convert database column names to snake_case
     underscored: true
   }
 });
-
+ 
 sequelize.authenticate()
   .then(() => console.log("Database connection established"))
   .catch(e => {
