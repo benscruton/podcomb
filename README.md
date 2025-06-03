@@ -10,15 +10,17 @@ To run:
 
 - Install node modules:
 ```
-yarn
+pnpm i
 ```
 
 - Run migrations to create database and tables:
 ```
-yarn sequelize-cli db:migrate
+pnpm sequelize-cli db:migrate
 ```
 
 - Start the server:
 ```
 node server.js
 ```
+
+Note: at this time, users can only be created using the API, and a valid API is required. API keys can be added in the `.env` file -- see `.env.example` for formatting.

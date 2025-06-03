@@ -1,15 +1,18 @@
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const {
   validators: {userValidator}
 } = require("../utils");
 const {User} = require("../models");
+
+const oneHour = 3600000;
 
 const register = (req, rsp) => {
   const user = req.body.user;
 
   const {errors, hasErrors} = userValidator(user);  
   if(hasErrors){
-    return rsp.status(400).json({success: false, errors});
+    return rsp.json({success: false, errors});
   }
 
   User.create(user)
@@ -23,7 +26,7 @@ const register = (req, rsp) => {
         const errors = {
           [field]: `A user with this ${field} already exists`
         };
-        return rsp.status(400).json({success: false, errors});
+        return rsp.json({success: false, errors});
       }
       console.log(e);
       rsp.status(400).json({success: false, error: e});
@@ -43,18 +46,27 @@ const login = (req, rsp) => {
   })
     .then(user => {
       if(!user){
-        return rsp.status(404).json({success: false, error: "User not found"});
+        return rsp.json({success: false, error: "User not found"});
       }
       bcrypt.compare(req.body.password, user.password)
         .then(match => {
           if(!match){
-            return rsp.json({success: false, error: "Passwords didn't match."});
+            return rsp.json({
+              success: false,
+              error: "Passwords didn't match."
+            });
           }
+          // If successful login attempt:
           delete user.dataValues.password;
-          return rsp.json({
-            success: true,
-            user
-          });
+          rsp
+            .cookie(
+              "userToken",
+              jwt.sign({id: user.id}, process.env.JWT_KEY),
+              {
+                httpOnly: true,
+                maxAge: 4 * oneHour
+              }
+            ).json({success: true, user});
         })
         .catch(e => {
           console.log(e);
@@ -68,8 +80,22 @@ const login = (req, rsp) => {
     });
 };
 
+const logout = (req, rsp) => {
+  rsp.clearCookie("userToken");
+  rsp.json({success: true, message: "Logged out"});
+};
+
+const testClient = (req, rsp) => {
+  rsp.json({
+    success: true,
+    message: "hello"
+  });
+};
+
 
 module.exports = {
   register,
-  login
+  login,
+  logout,
+  testClient
 };
