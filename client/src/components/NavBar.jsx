@@ -22,7 +22,7 @@ const NavBar = () => {
 
   return (
     <nav
-      className = "navbar is-link has-text-black mb-2"
+      className = "navbar has-background-danger-dark mb-2"
       role = "navigation"
       aria-label = "main navigation"
     >
@@ -35,7 +35,7 @@ const NavBar = () => {
         </Link>
         <a
           role = "button"
-          className = {`navbar-burger ${isActive ? "is-active" : ""}`}
+          className = {`navbar-burger has-text-white ${isActive ? "is-active" : ""}`}
           aria-label = "menu"
           aria-expanded = "false"
           onClick = {() => setIsActive(!isActive)}
@@ -47,12 +47,20 @@ const NavBar = () => {
         </a>
       </div>
 
-      <div className = {`navbar-menu ${isActive ? "is-active" : ""}`}>
+      <div className = {`navbar-menu ${isActive ? "is-active has-background-danger-dark" : ""}`}>
         <div className = "navbar-end">
           {userData ?
-            <div className = "navbar-item">
-              {userData.username}
-            </div>
+            <>
+              <Link
+                className = "navbar-item has-text-white px-3"
+                to = "/comb"
+              >
+                New Comb
+              </Link>
+              <div className = "navbar-item has-text-white pl-3">
+                {userData.username}
+              </div>
+            </>
             :
             <></>
           }

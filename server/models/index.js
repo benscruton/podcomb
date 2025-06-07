@@ -1,3 +1,5 @@
+const Comb = require("./comb.model");
+const SourceFeed = require("./sourceFeed.model");
 const User = require("./user.model");
 
 // const {sequelize} = require("../config");
@@ -6,5 +8,7 @@ const User = require("./user.model");
 //   .catch(e => console.log("Database sync failed:", e));
 
 module.exports = {
+  Comb,
+  SourceFeed,
   User
 };

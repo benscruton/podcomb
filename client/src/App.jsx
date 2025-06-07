@@ -9,6 +9,7 @@ import {
   TestButtons
 } from "./components";
 import {
+  EditComb,
   Home,
   Login
 } from './views'
@@ -33,17 +34,21 @@ const App = () => {
           <NavBar />
 
           <Routes>
-            <Route path="/" element={
+            <Route path = "/" element = {
               <Home />
             } />
 
-            <Route path="/login" element={
+            <Route path = "/login" element = {
               <Login />
+            } />
+
+            <Route path = "/comb" element = {
+              <EditComb />
             } />
 
           </Routes>
 
-          <TestButtons />
+          {/* <TestButtons /> */}
 
         </BrowserRouter>
       </AppContext.Provider>

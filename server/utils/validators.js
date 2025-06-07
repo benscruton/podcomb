@@ -1,3 +1,15 @@
+const combValidator = comb => {
+  const errors = {};
+  let hasErrors = false;
+
+  if(!comb.title){
+    hasErrors = true;
+    errors.title = "Must include a title";
+  }
+  
+  return {errors, hasErrors};
+};
+
 const userValidator = user => {
   const errors = {};
   let hasErrors = false;
@@ -24,5 +36,6 @@ const userValidator = user => {
 };
 
 module.exports = {
+  combValidator,
   userValidator
 };

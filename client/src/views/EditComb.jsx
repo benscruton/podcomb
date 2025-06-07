@@ -1,15 +1,15 @@
 import {useContext} from "react";
-import {LogRegCard} from "../components";
+import {EditCombCard} from "../components";
 import AppContext from "../context/AppContext";
 
-const Login = () => {
+const EditComb = () => {
   const {serverUrl, userData} = useContext(AppContext);
 
   return (
     <div className = "container">
-      <LogRegCard />
+      <EditCombCard />
     </div>
   );
 };
 
-export default Login;
+export default EditComb;

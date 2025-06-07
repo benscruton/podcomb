@@ -51,6 +51,7 @@ const LoginForm = () => {
       className = "card-content"
       onSubmit = {handleSubmit}
     >
+      {/* USERNAME */}
       <div className = "field">
         <label
           className = "label"
@@ -70,6 +71,7 @@ const LoginForm = () => {
         </div>
       </div>
 
+      {/* PASSWORD */}
       <div className = "field">
         <label
           className = "label"
