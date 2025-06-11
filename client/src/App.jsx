@@ -5,13 +5,13 @@ import {
   Route
 } from "react-router";
 import {
-  NavBar,
-  TestButtons
+  NavBar
 } from "./components";
 import {
-  EditComb,
+  Comb,
   Home,
-  Login
+  Login,
+  User
 } from './views'
 import AppContext from "./context/AppContext";
 // import './App.css'
@@ -42,8 +42,16 @@ const App = () => {
               <Login />
             } />
 
-            <Route path = "/comb" element = {
-              <EditComb />
+            <Route path = "/combs" element = {
+              <Comb />
+            } />
+
+            <Route path = "/combs/:combId" element = {
+              <Comb />
+            } />
+
+            <Route path = "/users" element = {
+              <User />
             } />
 
           </Routes>

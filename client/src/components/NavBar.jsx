@@ -53,13 +53,16 @@ const NavBar = () => {
             <>
               <Link
                 className = "navbar-item has-text-white px-3"
-                to = "/comb"
+                to = "/combs"
               >
                 New Comb
               </Link>
-              <div className = "navbar-item has-text-white pl-3">
+              <Link
+                className = "navbar-item has-text-white pl-3"
+                to = "/users"
+              >
                 {userData.username}
-              </div>
+              </Link>
             </>
             :
             <></>

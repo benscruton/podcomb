@@ -1,9 +1,11 @@
-const {DataTypes, ForeignKeyConstraintError} = require("sequelize");
+const {DataTypes} = require("sequelize");
+const axios = require("axios");
+const xml2js = require("xml2js");
 const {sequelize} = require("../config");
 const Comb = require("./comb.model");
 
 const SourceFeed = sequelize.define(
-  "SourceFeed",
+  "sourceFeed",
   {
     id: {
       type: DataTypes.UUID,
@@ -25,7 +27,20 @@ const SourceFeed = sequelize.define(
       type: DataTypes.TEXT
     }
   },
-  {tableName: "source_feeds"}
+  {
+    tableName: "source_feeds",
+    hooks: {
+      beforeCreate: async sourceFeed => {
+        await axios.get(sourceFeed.url)
+          .then(({data}) => {
+            xml2js.parseString(data, (err, result) => {
+              sourceFeed.imageUrl = result.rss.channel[0].image[0].url[0];
+            });
+          })
+          .catch(e => console.log(e));
+      }
+    }
+  }
 );
 
 Comb.hasMany(SourceFeed, {

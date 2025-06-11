@@ -29,6 +29,7 @@ module.exports = {
         },
         language: {
           type: DataTypes.STRING,
+          allowNull: false,
           defaultValue: "en",
         },
         image_url: {

@@ -12,7 +12,4 @@ authRouter.route("/login")
 authRouter.route("/logout")
   .get(authController.logout);
 
-authRouter.route("/test")
-  .get(authentication.clientToken, authController.testClient);
-
 module.exports = authRouter;

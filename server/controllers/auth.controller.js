@@ -85,17 +85,9 @@ const logout = (req, rsp) => {
   rsp.json({success: true, message: "Logged out"});
 };
 
-const testClient = (req, rsp) => {
-  rsp.json({
-    success: true,
-    message: "hello"
-  });
-};
-
 
 module.exports = {
   register,
   login,
-  logout,
-  testClient
+  logout
 };

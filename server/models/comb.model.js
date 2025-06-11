@@ -3,7 +3,7 @@ const {sequelize} = require("../config");
 const User = require("./user.model");
 
 const Comb = sequelize.define(
-  "Comb",
+  "comb",
   {
     id: {
       type: DataTypes.UUID,
@@ -26,6 +26,7 @@ const Comb = sequelize.define(
 
     language: {
       type: DataTypes.STRING,
+      allowNull: false,
       defaultValue: "en",
     },
     

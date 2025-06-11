@@ -1,4 +1,5 @@
 import {useContext, useState} from "react";
+import {useNavigate} from "react-router";
 import axios from "axios";
 import AppContext from "../context/AppContext";
 
@@ -7,6 +8,7 @@ const CombForm = () => {
     serverUrl,
     userData
   } = useContext(AppContext);
+  const navigate = useNavigate();
   
   const emptyInputs = {
     title: "",
@@ -43,7 +45,10 @@ const CombForm = () => {
       {comb},
       {withCredentials: true}
     )
-      .then(rsp => console.log(rsp.data))
+      .then(rsp => {
+        console.log(rsp.data);
+        navigate(`/combs/${rsp.data.comb.id}`);
+      })
       .catch(e => console.error(e));
   };
 

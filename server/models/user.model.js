@@ -3,7 +3,7 @@ const {sequelize} = require("../config");
 const bcrypt = require("bcrypt");
 
 const User = sequelize.define(
-  "User",
+  "user",
   {
     id: {
       type: DataTypes.UUID,
