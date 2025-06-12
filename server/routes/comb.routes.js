@@ -8,6 +8,7 @@ combRouter.route("/")
 
 combRouter.route("/:combId")
   .get(authentication.clientToken, combController.getComb)
+  .put(authentication.clientToken, combController.updateComb)
   .delete(authentication.clientToken, combController.deleteComb);
 
 combRouter.route("/users/me")

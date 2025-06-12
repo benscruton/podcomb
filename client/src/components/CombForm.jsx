@@ -3,26 +3,23 @@ import {useNavigate} from "react-router";
 import axios from "axios";
 import AppContext from "../context/AppContext";
 
-const CombForm = () => {
-  const {
-    serverUrl,
-    userData
-  } = useContext(AppContext);
+const CombForm = ({comb, setComb, setIsEditing}) => {
+  const {serverUrl} = useContext(AppContext);
   const navigate = useNavigate();
   
-  const emptyInputs = {
-    title: "",
-    description: "",
-    language: "",
-    imageUrl: "",
-    category: "",
-    author: "",
-    link: "",
-    isExplicit: false,
-    isPublic: false
+  const initialInputs = {
+    title: comb?.title || "",
+    description: comb?.description || "",
+    language: comb?.language || "",
+    imageUrl: comb?.imageUrl || "",
+    category: comb?.category || "",
+    author: comb?.author || "",
+    link: comb?.link || "",
+    isExplicit: comb?.isExplicit || false,
+    isPublic: comb?.isPublic || false
   };
 
-  const [inputs, setInputs] = useState(emptyInputs);
+  const [inputs, setInputs] = useState(initialInputs);
   
   const handleChange = e => {
     if(e.target.type === "checkbox"){
@@ -37,17 +34,31 @@ const CombForm = () => {
     });
   };
   
-  const handleSubmit = e => {
+  const createComb = e => {
     e.preventDefault();
-    const comb = {...inputs, userId: userData.id};
     axios.post(
       `${serverUrl}/api/combs/`,
-      {comb},
+      {comb: inputs},
       {withCredentials: true}
     )
-      .then(rsp => {
-        console.log(rsp.data);
-        navigate(`/combs/${rsp.data.comb.id}`);
+      .then(({data}) => {
+        navigate(`/combs/${data.comb.id}`);
+      })
+      .catch(e => console.error(e));
+  };
+
+  const updateComb = e => {
+    e.preventDefault();
+    axios.put(
+      `${serverUrl}/api/combs/${comb.id}`,
+      {comb: inputs},
+      {withCredentials: true}
+    )
+      .then(({data}) => {
+        if(data.success){
+          setComb(data.comb);
+          setIsEditing(false);
+        }
       })
       .catch(e => console.error(e));
   };
@@ -55,8 +66,19 @@ const CombForm = () => {
   return (
     <form
       className = "card-content"
-      onSubmit = {handleSubmit}
+      onSubmit = {comb ? updateComb : createComb}
     >
+
+      {comb ?
+        <p className = "mb-4 has-text-centered">
+          <img
+            style = {{maxWidth: "200px"}}
+            src = {comb.imageUrl}
+            alt = "Podcast cover image"
+          />
+        </p>
+        : <></>
+      }
       {/* TITLE */}
       <div className = "field">
         <label
@@ -233,11 +255,21 @@ const CombForm = () => {
       {/* SUBMIT BUTTON */}
       <div className = "has-text-centered">
         <button
-          className = "button is-success"
+          className = "button is-success mx-2"
           type = "submit"
         >
-          Create
+          {comb ? "Update Comnb" : "Create Comb"}
         </button>
+
+        {comb ?
+          <button
+            className = "button has-background-warning mx-2"
+            onClick = {() => setIsEditing(false)}
+          >
+            Cancel
+          </button>
+          : <></>
+        }
       </div>
     </form>
   );

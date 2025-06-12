@@ -11,6 +11,7 @@ import {
   Comb,
   Home,
   Login,
+  NewComb,
   User
 } from './views'
 import AppContext from "./context/AppContext";
@@ -43,7 +44,7 @@ const App = () => {
             } />
 
             <Route path = "/combs" element = {
-              <Comb />
+              <NewComb />
             } />
 
             <Route path = "/combs/:combId" element = {

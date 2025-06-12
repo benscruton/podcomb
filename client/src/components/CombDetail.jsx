@@ -1,5 +1,4 @@
-import {useContext, useState, useEffect} from "react";
-import {useNavigate} from "react-router";
+import {useContext} from "react";
 import axios from "axios";
 import AppContext from "../context/AppContext";
 import {
@@ -7,37 +6,8 @@ import {
   SourceFeedForm
 } from ".";
 
-const CombDetail = ({combId}) => {
+const CombDetail = ({comb, isLoaded, setComb}) => {
   const {serverUrl} = useContext(AppContext);
-  const navigate = useNavigate();
-
-  const [comb, setComb] = useState(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    axios.get(
-      `${serverUrl}/api/combs/${combId}`,
-      {withCredentials: true}
-    )
-      .then(({data}) => {
-        setComb(data.comb);
-      })
-      .catch(e => console.error(e))
-      .finally(() => setIsLoaded(true));
-  }, []);
-
-  const deleteComb = () => {
-    axios.delete(
-      `${serverUrl}/api/combs/${combId}`,
-      {withCredentials: true}
-    )
-      .then(({data}) => {
-        if(data.success){
-          navigate("/users");
-        }
-      })
-      .catch(e => console.error(e));
-  };
 
   const removeFeed = e => {
     axios.delete(
@@ -133,6 +103,8 @@ const CombDetail = ({combId}) => {
                 key = {sourceFeed.id}
                 sourceFeed = {sourceFeed}
                 removeFeed = {removeFeed}
+                combImageUrl = {comb.imageUrl}
+                setComb = {setComb}
               />
             )}
             <div className = "card">
@@ -146,15 +118,6 @@ const CombDetail = ({combId}) => {
                 setComb = {setComb}
               />
             </div>
-
-            <p>
-              <button
-                className = "button has-background-danger mb-2"
-                onClick = {deleteComb}
-              >
-                Delete This Comb
-              </button>
-            </p>
           </>
           :
           <p>Comb loading failed.</p>

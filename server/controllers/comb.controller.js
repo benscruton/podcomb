@@ -1,6 +1,7 @@
 const {
   validators: {
     combValidator,
+    combUpdateValidator,
     sourceFeedValidator
   },
   getUserIdFromCookie
@@ -14,13 +15,14 @@ const {
 const createComb = async (req, rsp) => {
   try{
     const combData = req.body.comb;
+    const userId = getUserIdFromCookie(req.cookies.userToken);
 
     const {errors, hasErrors} = combValidator(combData);
     if(hasErrors){
       return rsp.json({success: false, errors});
     }
 
-    const user = await User.findByPk(combData.userId);
+    const user = await User.findByPk(userId);
 
     const comb = await Comb.create({
       title: combData.title,
@@ -48,12 +50,7 @@ const getComb = (req, rsp) => {
 
   Comb.findByPk(
     combId,
-    {
-      include: {
-        model: SourceFeed,
-        as: "sourceFeeds"
-      }
-    }
+    {include: SourceFeed}
   ).then(comb => {
     if(!comb){
       return rsp.status(404).json({success: false});
@@ -67,6 +64,48 @@ const getComb = (req, rsp) => {
     console.log(e);
     rsp.status(400).json({success: false, error: e});
   });
+};
+
+const updateComb = async (req, rsp) => {
+  try{
+    const {combId} = req.params;
+    const combData = req.body.comb;
+    const {errors, hasErrors} = combUpdateValidator(combData);
+    if(hasErrors){
+      return rsp.json({success: false, errors});
+    }
+
+    const [count] = await Comb.update(
+      combData,
+      {
+        where: {id: combId},
+        fields: [
+          "title",
+          "author",
+          "description",
+          "language",
+          "imageUrl",
+          "category",
+          "link",
+          "isExplicit",
+          "isPublic"
+        ]
+      }
+    );
+
+    const comb = await Comb.findByPk(
+      combId,
+      {include: SourceFeed}
+    );
+    rsp.json({
+      success: true,
+      updated: !!count,
+      comb
+    });
+  }
+  catch(e){
+    rsp.status(400).json({success: false, error: e});
+  }
 };
 
 const deleteComb = async (req, rsp) => {
@@ -83,7 +122,6 @@ const deleteComb = async (req, rsp) => {
 
 const getUserCombs = async (req, rsp) => {
   const userId = getUserIdFromCookie(req.cookies.userToken);
-  // const user = await User.findByPk(userId);
   const combs = await Comb.findAll({
     where: {userId}
   });
@@ -136,6 +174,7 @@ deleteSourceFeed = async (req, rsp) => {
 module.exports = {
   createComb,
   getComb,
+  updateComb,
   deleteComb,
   getUserCombs,
   addSourceFeed,
