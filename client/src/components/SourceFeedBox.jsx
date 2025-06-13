@@ -3,7 +3,7 @@ import {useParams} from "react-router";
 import axios from "axios";
 import AppContext from "../context/AppContext";
 
-const SourceFeedBox = ({sourceFeed, removeFeed, combImageUrl, setComb}) => {
+const SourceFeedBox = ({sourceFeed, removeSourceFeed, combImageUrl, setComb}) => {
   const {combId} = useParams();
   const {serverUrl} = useContext(AppContext);
   
@@ -49,7 +49,7 @@ const SourceFeedBox = ({sourceFeed, removeFeed, combImageUrl, setComb}) => {
         <button
           className = "button is-danger mx-2"
           value = {sourceFeed.id}
-          onClick = {removeFeed}
+          onClick = {removeSourceFeed}
         >
           Remove feed
         </button>

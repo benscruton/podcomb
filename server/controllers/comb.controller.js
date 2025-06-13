@@ -1,10 +1,12 @@
 const {
+  buildXml,
+  combineShows,
+  getUserIdFromCookie,
   validators: {
     combValidator,
     combUpdateValidator,
     sourceFeedValidator
   },
-  getUserIdFromCookie
 } = require("../utils");
 const {
   Comb,
@@ -171,6 +173,26 @@ deleteSourceFeed = async (req, rsp) => {
   }
 };
 
+const sendCombXml = async (req, rsp) => {
+  const {combId} = req.params;
+  const comb = await Comb.findByPk(
+    combId,
+    {include: SourceFeed}
+  );
+
+  combineShows(comb)
+    .then(combinedData => {
+      const xml = buildXml(combinedData);
+
+      rsp.set("Content-Type", "text/xml");
+      rsp.send(xml);
+    })
+    .catch(e => {
+      console.log(e);
+      rsp.json({success: false, error: e});
+    })
+};
+
 module.exports = {
   createComb,
   getComb,
@@ -178,5 +200,6 @@ module.exports = {
   deleteComb,
   getUserCombs,
   addSourceFeed,
-  deleteSourceFeed
+  deleteSourceFeed,
+  sendCombXml
 };

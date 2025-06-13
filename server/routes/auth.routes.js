@@ -1,15 +1,15 @@
 const {authController} = require("../controllers");
 const {middleware: {authentication}} = require("../config");
 
-const authRouter = require("express").Router();
+const authRoutes = require("express").Router();
 
-authRouter.route("/register")
+authRoutes.route("/register")
   .post(authentication.apiKey, authController.register);
 
-authRouter.route("/login")
+authRoutes.route("/login")
   .post(authController.login);
 
-authRouter.route("/logout")
+authRoutes.route("/logout")
   .get(authController.logout);
 
-module.exports = authRouter;
+module.exports = authRoutes;

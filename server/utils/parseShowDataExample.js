@@ -1,4 +1,4 @@
-const parseShowData = (rssData, xmlMetadata = {}) => {
+const parseShowDataExample = (rssData, xmlMetadata = {}) => {
   
   xmlMetadata = {
     ...xmlMetadata,
@@ -31,4 +31,4 @@ const parseShowData = (rssData, xmlMetadata = {}) => {
   return {xmlMetadata, channel, episodes};
 };
 
-module.exports = parseShowData;
+module.exports = parseShowDataExample;

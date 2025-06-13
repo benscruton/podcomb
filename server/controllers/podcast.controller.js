@@ -5,7 +5,7 @@ const path = require("path");
 const {
   buildXml,
   combineShows,
-  parseShowData
+  parseShowDataExample
 } = require("../utils");
 
 const test = (req, rsp) => rsp.json({pass: true});
@@ -62,7 +62,7 @@ const transform = (req, rsp) => {
         if(err)
           throw new Error(err);
 
-        const showData = parseShowData(result);
+        const showData = parseShowDataExample(result);
         const xml = buildXml(showData);
 
         rsp.set("Content-Type", "text/xml");

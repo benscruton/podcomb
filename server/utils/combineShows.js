@@ -1,68 +1,47 @@
 const axios = require("axios");
 const xml2js = require("xml2js");
-const parseShowData = require("./parseShowData");
 
-const combineShows = shows => {
-
-  const showPromises = shows.map(show =>
-    axios.get(show)
+const combineShows = comb => {
+  const feedPromises = comb.sourceFeeds.map(feed =>
+    axios.get(feed.url)
   );
 
-  // Get original XML from show URL
-  return Promise.all(showPromises)
-    .then(shows => {
-      // Parse with xml2js asynchronously, return promise array
-      const showDataPromises = shows.map(show =>
-        xml2js.parseStringPromise(show.data)
+  return Promise.all(feedPromises)
+    .then(feeds => {
+      const feedDataPromises = feeds.map(feed =>
+        xml2js.parseStringPromise(feed.data)
       );
 
-      // Resolve these to non-promise JSON data
-      return Promise.all(showDataPromises)
-        .then(showDataArray => {
-
-          console.log(showDataArray);
-
-          let xmlMetadata = {};
-          const channel = {};
-          const episodes = [];
-
-          for(let showData of showDataArray){
-            const {
-              xmlMetadata: showMetadata,
-              channel: showChannel,
-              episodes: showEpisodes
-            } = parseShowData(showData);
-
-            // Update metadata with new show data
-            xmlMetadata = {
-              ...xmlMetadata,
-              ...showMetadata
-            };
-
-            // If first show, borrow channel data
-            if(!channel.title){
-              for(let field in showChannel){
-                channel[field] = showChannel[field];
-              }
-            }
-            // Otherwise, append new show title and description, 
-            // and mark as explicit if any show is explicit
-            else{
-              channel.title += ` | ${showChannel.title}`;
-              channel.description += `\n\n***\n\n${showChannel.description}`;
-
-              channel["itunes:explicit"] = (
-                channel["itunes:explicit"] === "true" ||
-                showChannel["itunes:explicit"] === "true" ?
-                  "true" : "false"
-              )
-            }
-
-            // Add episodes
-            episodes.push(...showEpisodes);
+      return Promise.all(feedDataPromises)
+        .then(feedDataArray => {
+          const channel = {
+            title: comb.title,
+            description: comb.description,
+            "itunes:image": comb.imageUrl,
+            language: comb.language,
+            "itunes:category": comb.category,
+            "itunes:explicit": comb.isExplicit ?
+              "yes" : "no",
+            "itunes:author": comb.author
+          };
+          if(comb.link){
+            channel.link = comb.link;
           }
 
-          // Sort episodes by date
+          let xmlMetadata = {};
+          const episodes = [];
+
+          for(let feedData of feedDataArray){
+            // Add feed metadata
+            xmlMetadata = {
+              ...xmlMetadata,
+              ...feedData.rss["$"]
+            };
+            // Add episodes
+            episodes.push(...feedData.rss.channel[0].item);
+          }
+
+          // Sort all episodes by date
           episodes.forEach(e =>
             e.dateInt = new Date(e.pubDate[0]).getTime()
           );

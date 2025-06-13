@@ -1,4 +1,4 @@
-import {useContext} from "react";
+import {useContext, useState} from "react";
 import axios from "axios";
 import AppContext from "../context/AppContext";
 import {
@@ -9,9 +9,11 @@ import {
 const CombDetail = ({comb, isLoaded, setComb}) => {
   const {serverUrl} = useContext(AppContext);
 
-  const removeFeed = e => {
+  const [copyNotification, setCopyNotification] = useState("");
+
+  const removeSourceFeed = e => {
     axios.delete(
-      `${serverUrl}/api/combs/${combId}/sourcefeeds/${e.target.value}`,
+      `${serverUrl}/api/combs/${comb.id}/sourcefeeds/${e.target.value}`,
       {withCredentials: true}
     )
       .then(({data}) => {
@@ -23,7 +25,12 @@ const CombDetail = ({comb, isLoaded, setComb}) => {
         });
       })
       .catch(e => console.error(e));
+  };
 
+  const copyLink = e => {
+    navigator.clipboard.writeText(e.target.value);
+    setCopyNotification("Copied!");
+    setTimeout(() => setCopyNotification(""), 2000)
   };
   
   return (
@@ -34,6 +41,17 @@ const CombDetail = ({comb, isLoaded, setComb}) => {
             <h1 className = "title is-2">
               {comb.title}
             </h1>
+
+            <p className = "mb-2 has-text-success">
+              <button
+                className = "button is-info mr-2"
+                value = {`${serverUrl}/feeds/${comb.id}`}
+                onClick = {copyLink}
+              >
+                Copy RSS link
+              </button>
+              {copyNotification}
+            </p>
 
             <img
               style = {{maxWidth: "200px"}}
@@ -102,7 +120,7 @@ const CombDetail = ({comb, isLoaded, setComb}) => {
               <SourceFeedBox
                 key = {sourceFeed.id}
                 sourceFeed = {sourceFeed}
-                removeFeed = {removeFeed}
+                removeSourceFeed = {removeSourceFeed}
                 combImageUrl = {comb.imageUrl}
                 setComb = {setComb}
               />

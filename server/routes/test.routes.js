@@ -1,8 +1,8 @@
-const testRouter = require("express").Router();
+const testRoutes = require("express").Router();
 
-testRouter.route("/")
+testRoutes.route("/")
   .get((req, rsp) => {
     rsp.json({pass: true});
   });
 
-module.exports = testRouter;
+module.exports = testRoutes;

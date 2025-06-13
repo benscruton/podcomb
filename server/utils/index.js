@@ -1,13 +1,15 @@
 const buildXml = require("./buildXml");
 const combineShows = require("./combineShows");
+const combineShowsExample = require("./combineShowsExample");
 const validators = require("./validators");
-const parseShowData = require("./parseShowData");
+const parseShowDataExample = require("./parseShowDataExample");
 const getUserIdFromCookie = require("./getUserIdFromCookie");
 
 module.exports = {
   buildXml,
   combineShows,
+  combineShowsExample,
   getUserIdFromCookie,
   validators,
-  parseShowData
+  parseShowDataExample
 };

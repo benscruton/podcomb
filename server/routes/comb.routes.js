@@ -1,23 +1,23 @@
 const {combController} = require("../controllers");
 const {middleware: {authentication}} = require("../config");
 
-const combRouter = require("express").Router();
+const combRoutes = require("express").Router();
 
-combRouter.route("/")
+combRoutes.route("/")
   .post(authentication.clientToken, combController.createComb);
 
-combRouter.route("/:combId")
+combRoutes.route("/:combId")
   .get(authentication.clientToken, combController.getComb)
   .put(authentication.clientToken, combController.updateComb)
   .delete(authentication.clientToken, combController.deleteComb);
 
-combRouter.route("/users/me")
+combRoutes.route("/users/me")
   .get(authentication.clientToken, combController.getUserCombs);
 
-combRouter.route("/:combId/sourcefeeds")
+combRoutes.route("/:combId/sourcefeeds")
   .post(authentication.clientToken,combController.addSourceFeed);
 
-combRouter.route("/:combId/sourcefeeds/:sourceFeedId")
+combRoutes.route("/:combId/sourcefeeds/:sourceFeedId")
   .delete(authentication.clientToken, combController.deleteSourceFeed);
 
-module.exports = combRouter;
+module.exports = combRoutes;
