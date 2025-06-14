@@ -1,0 +1,15 @@
+services:
+  db:
+    image: "postgres:16.9"
+    container_name: "postgres"
+    restart: unless-stopped
+    ports:
+      - 5434:5432
+    volumes:
+      - podcomb_db:/var/lib/postgresql/data
+    env_file:
+      - ../.env
+
+volumes:
+  podcomb_db:
+    external: true
