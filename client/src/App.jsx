@@ -4,6 +4,7 @@ import {
   Routes,
   Route
 } from "react-router";
+import axios from "axios";
 import {
   NavBar
 } from "./components";
@@ -17,19 +18,34 @@ import {
 import AppContext from "./context/AppContext";
 // import './App.css'
 
-const serverUrl = "http://localhost:8000";
+const serverUrl = process.env.NODE_ENV === "development" || process.env.NODE_ENV === "postgres" ?
+  "http://localhost:8000" : "";
 
 const App = () => {
   const [userData, setUserData] = useState(
     JSON.parse(localStorage.getItem("userData"))
   );
 
+  const logOut = () => {
+    axios.get(
+      `${serverUrl}/api/auth/logout`,
+      {withCredentials: true}
+    ).then(rsp => {
+        if(rsp.data.success){
+          setUserData(null);
+          localStorage.removeItem("userData");
+        }
+      })
+      .catch(e => console.error(e));
+  };
+
   return (
     <div>
       <AppContext.Provider value={{
         serverUrl,
         userData,
-        setUserData
+        setUserData,
+        logOut
       }}>
         <BrowserRouter>
           <NavBar />

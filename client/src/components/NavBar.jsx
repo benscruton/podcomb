@@ -1,23 +1,15 @@
 import {useState, useContext} from "react";
-import {Link} from "react-router";
-import axios from "axios";
+import {Link, useNavigate} from "react-router";
 import AppContext from "../context/AppContext";
 
 const NavBar = () => {
+  const navigate = useNavigate();
   const [isActive, setIsActive] = useState(false);
-  const {serverUrl, userData, setUserData} = useContext(AppContext);
+  const {userData, logOut} = useContext(AppContext);
 
-  const logOut = () => {
-    axios.get(
-      `${serverUrl}/api/auth/logout`,
-      {withCredentials: true}
-    ).then(rsp => {
-        if(rsp.data.success){
-          setUserData(null);
-          localStorage.removeItem("userData");
-        }
-      })
-      .catch(e => console.error(e));
+  const logOutAndNavigateHome = () => {
+    logOut();
+    navigate("/");
   };
 
   return (
@@ -71,7 +63,7 @@ const NavBar = () => {
             {userData ?
               <a
                 className = "button is-danger"
-                onClick = {logOut}
+                onClick = {logOutAndNavigateHome}
               >
                 Log Out
               </a>

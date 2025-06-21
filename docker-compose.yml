@@ -1,0 +1,9 @@
+services:
+  podcomb_app:
+    container_name: podcomb_app
+    build: .
+    ports:
+      - 3041:8000
+    restart: unless-stopped
+    env_file:
+      - ./.env

@@ -10,7 +10,7 @@ To run:
 
 - Install node modules:
 ```
-pnpm i
+yarn
 ```
 
 - Configure database (see below)
@@ -23,7 +23,7 @@ node server.js
 - Start the front end server:
 ```
 cd client
-pnpm run dev
+yarn run dev
 ```
 
 Note: at this time, users can only be created using the API, and a valid API is required. API keys can be added in the `.env` file -- see `.env.example` for formatting.
@@ -57,5 +57,36 @@ This will start a Postgres database on port 5434 (the port number can be changed
 Once your database is configured, run migrations to create the tables:
 
 ```
-pnpm sequelize-cli db:migrate
+yarn sequelize-cli db:migrate
 ```
+
+## API Documentation
+
+### User management
+
+- POST to `/api/auth/register` -- Create user
+    - Must include API Key in request headers, as `"api-key"`
+
+- POST to `/api/auth/login` -- Log in (from browser)
+
+- GET to `/api/auth/logout` -- Log out (from browser)
+
+### Comb management
+
+- Note: all comb management routes require a JWT authentication token as a cookie
+
+- POST to `/api/combs/` -- Create comb
+
+- GET to `/api/combs/:combId` -- Get comb data
+
+- PUT to `/api/combs/:combId` -- Update comb
+
+- DELETE to `/api/combs/:combId` -- Delete comb
+
+- GET to `/api/combs/users` -- Get all of logged-in user's combs
+
+- POST to `/api/combs/:combIid/sourcefeeds` -- Add a source feed to comb
+
+- DELETE to `/api/combs/:combId/sourcefeeds/:sourceFeedId` -- Delete a source feed
+
+- GET to `/feeds/:combId` -- Get combined podcast feed as XML (use this address for podcast players)

@@ -3,17 +3,19 @@ import {
   useState,
   useEffect
 } from "react";
-import {Link} from "react-router"
+import {Link, useNavigate} from "react-router"
 import axios from "axios";
 import AppContext from "../context/AppContext";
 
 const UserCombs = () => {
-  const {serverUrl} = useContext(AppContext);
+  const {serverUrl, logOut} = useContext(AppContext);
+  const navigate = useNavigate();
+
   const [combs, setCombs] = useState(null);
 
   useEffect(() => {
     axios.get(
-      `${serverUrl}/api/combs/users/me`,
+      `${serverUrl}/api/combs/users`,
       {withCredentials: true}
     )
       .then(({data}) => {
@@ -22,7 +24,13 @@ const UserCombs = () => {
         }
         setCombs(data.combs);
       })
-      .catch(e => console.error(e));
+      .catch(e => {
+        if(e.status === 401){
+          logOut();
+          return navigate("/login");
+        }
+        console.error(e);
+      });
   }, []);
 
   return (

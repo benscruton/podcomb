@@ -14,7 +14,7 @@ app.use(
   }),
   express.json(),
   express.urlencoded({extended: true}),
-  // express.static("./client/build"),
+  express.static("./client/dist"),
   require("./server/routes")
 );
 

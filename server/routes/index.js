@@ -12,4 +12,17 @@ router.use("/api/combs", combRoutes);
 router.use("/api/podcasts", podcastRoutes);
 router.use("/feeds", feedRoutes);
 
+// For serving build files:
+const path = require("path");
+router.use((_, rsp) => {
+  rsp.sendFile(path.join(
+    __dirname,
+    "..",
+    "..",
+    "client",
+    "dist",
+    "index.html")
+  );
+});
+
 module.exports = router;

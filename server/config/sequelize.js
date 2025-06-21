@@ -38,8 +38,6 @@ else{
     }
   });
 }
-
-console.log(sequelize.dialect);
  
 sequelize.authenticate()
   .then(() => console.log("Database connection established"))
