@@ -8,7 +8,11 @@ const NavBar = () => {
   const {userData, logOut} = useContext(AppContext);
 
   const logOutAndNavigateHome = () => {
-    logOut();
+    logOut({
+      title: "You have been logged out!",
+      color: "success"
+    });
+    setIsActive(false);
     navigate("/");
   };
 
@@ -22,6 +26,7 @@ const NavBar = () => {
         <Link
           className = "p-3 has-text-white"
           to = "/"
+          onClick = {() => setIsActive(false)}
         >
           PodComb Logo
         </Link>
@@ -46,12 +51,14 @@ const NavBar = () => {
               <Link
                 className = "navbar-item has-text-white px-3"
                 to = "/combs"
+                onClick = {() => setIsActive(false)}
               >
                 New Comb
               </Link>
               <Link
                 className = "navbar-item has-text-white pl-3"
                 to = "/users"
+                onClick = {() => setIsActive(false)}
               >
                 {userData.username}
               </Link>
@@ -71,6 +78,7 @@ const NavBar = () => {
               <Link
                 className = "button is-info"
                 to = "/login"
+                onClick = {() => setIsActive(false)}
               >
                 Log In
               </Link>

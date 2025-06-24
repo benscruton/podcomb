@@ -1,3 +1,4 @@
+import BoxMessage from "./BoxMessage";
 import CombDetail from "./CombDetail";
 import CombForm from "./CombForm";
 import EditCombCard from "./EditCombCard";
@@ -9,6 +10,7 @@ import SourceFeedForm from "./SourceFeedForm";
 import UserCombs from "./UserCombs";
 
 export {
+  BoxMessage,
   CombDetail,
   CombForm,
   EditCombCard,

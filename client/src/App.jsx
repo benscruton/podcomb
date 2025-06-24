@@ -6,6 +6,7 @@ import {
 } from "react-router";
 import axios from "axios";
 import {
+  BoxMessage,
   NavBar
 } from "./components";
 import {
@@ -25,8 +26,9 @@ const App = () => {
   const [userData, setUserData] = useState(
     JSON.parse(localStorage.getItem("userData"))
   );
+  const [logOutMessage, setLogOutMessage] = useState({text: "hello", color: "black"});
 
-  const logOut = () => {
+  const logOut = message => {
     axios.get(
       `${serverUrl}/api/auth/logout`,
       {withCredentials: true}
@@ -34,6 +36,7 @@ const App = () => {
         if(rsp.data.success){
           setUserData(null);
           localStorage.removeItem("userData");
+          setLogOutMessage(message);
         }
       })
       .catch(e => console.error(e));
@@ -45,10 +48,19 @@ const App = () => {
         serverUrl,
         userData,
         setUserData,
-        logOut
+        logOut,
+        setLogOutMessage
       }}>
         <BrowserRouter>
           <NavBar />
+          
+          {logOutMessage ?
+            <BoxMessage
+              message = {logOutMessage}
+              clear = {() => setLogOutMessage(null)}
+            />
+            : <></>
+          }
 
           <Routes>
             <Route path = "/" element = {

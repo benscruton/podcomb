@@ -26,7 +26,10 @@ const UserCombs = () => {
       })
       .catch(e => {
         if(e.status === 401){
-          logOut();
+          logOut({
+            title: "Session timed out; please log in again.",
+            color: "warning"
+          });
           return navigate("/login");
         }
         console.error(e);
