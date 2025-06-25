@@ -258,7 +258,7 @@ const CombForm = ({comb, setComb, setIsEditing}) => {
           className = "button is-success mx-2"
           type = "submit"
         >
-          {comb ? "Update Comnb" : "Create Comb"}
+          {comb ? "Update Comb" : "Create Comb"}
         </button>
 
         {comb ?

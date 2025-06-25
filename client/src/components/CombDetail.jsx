@@ -7,7 +7,10 @@ import {
 } from ".";
 
 const CombDetail = ({comb, isLoaded, setComb}) => {
-  const {serverUrl} = useContext(AppContext);
+  const {
+    serverUrl,
+    hostUrl
+  } = useContext(AppContext);
 
   const [copyNotification, setCopyNotification] = useState("");
 
@@ -45,7 +48,7 @@ const CombDetail = ({comb, isLoaded, setComb}) => {
             <p className = "mb-2 has-text-success">
               <button
                 className = "button is-info mr-2"
-                value = {`${serverUrl}/feeds/${comb.id}`}
+                value = {`${hostUrl}/feeds/${comb.id}`}
                 onClick = {copyLink}
               >
                 Copy RSS link

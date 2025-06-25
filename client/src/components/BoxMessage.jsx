@@ -9,7 +9,7 @@ const BoxMessage = ({message, clear, delay}) => {
           {message.title || "Message"}
         </p>
         <button
-          class="delete"
+          className="delete"
           aria-label="delete"
           onClick = {clear}
         />

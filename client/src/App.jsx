@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import {useState, useEffect} from 'react'
 import {
   BrowserRouter,
   Routes,
@@ -19,6 +19,8 @@ import {
 import AppContext from "./context/AppContext";
 // import './App.css'
 
+console.log(process.env.NODE_ENV);
+
 const serverUrl = process.env.NODE_ENV === "development" || process.env.NODE_ENV === "postgres" ?
   "http://localhost:8000" : "";
 
@@ -26,7 +28,19 @@ const App = () => {
   const [userData, setUserData] = useState(
     JSON.parse(localStorage.getItem("userData"))
   );
-  const [logOutMessage, setLogOutMessage] = useState({text: "hello", color: "black"});
+  const [logOutMessage, setLogOutMessage] = useState(null);
+  const [hostUrl, setHostUrl] = useState(serverUrl);
+
+  useEffect(() => {
+    axios.get(`${serverUrl}/api/info/host`)
+      .then(({data: {host}}) => {
+        setHostUrl
+      })
+      .catch(e => {
+        console.error(e);
+        console.warn("Unable to find host URL. This may mean it has not been set in your server's .env file.");
+      });
+  }, []);
 
   const logOut = message => {
     axios.get(
@@ -46,6 +60,7 @@ const App = () => {
     <div>
       <AppContext.Provider value={{
         serverUrl,
+        hostUrl,
         userData,
         setUserData,
         logOut,

@@ -3,12 +3,14 @@ const router = require("express").Router();
 const testRoutes = require("./test.routes");
 const authRoutes = require("./auth.routes");
 const combRoutes = require("./comb.routes");
+const infoRoutes = require("./info.routes");
 const podcastRoutes = require("./podcast.routes");
 const feedRoutes = require("./feed.routes");
 
 router.use("/api/test", testRoutes);
 router.use("/api/auth", authRoutes);
 router.use("/api/combs", combRoutes);
+router.use("/api/info", infoRoutes);
 router.use("/api/podcasts", podcastRoutes);
 router.use("/feeds", feedRoutes);
 
