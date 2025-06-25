@@ -22,13 +22,17 @@ const combineShows = comb => {
             "itunes:category": comb.category,
             "itunes:explicit": comb.isExplicit ?
               "yes" : "no",
-            "itunes:author": comb.author
+            "itunes:author": comb.author,
+            isPublic: comb.isPublic
           };
           if(comb.link){
             channel.link = comb.link;
           }
 
-          let xmlMetadata = {};
+          let xmlMetadata = {
+            "xmlns:itunes": "http://www.itunes.com/dtds/podcast-1.0.dtd",
+            "xmlns:googleplay": "http://www.google.com/schemas/play-podcasts/1.0/"
+          };
           const episodes = [];
 
           for(let feedData of feedDataArray){

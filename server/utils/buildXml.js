@@ -47,6 +47,10 @@ const buildXml = ({xmlMetadata, channel, episodes}) => {
   if(channel["itunes:author"]){
     xml += `\n    <itunes:author>${channel["itunes:author"]}</itunes:author>`;
   }
+  if(!channel.isPublic){
+    xml += "\n    <itunes:block>Yes</itunes:block>";
+    xml += "\n    <googleplay:block>yes</googleplay:block>";
+  }
 
   // Add episodes
   episodes.forEach(ep => {
