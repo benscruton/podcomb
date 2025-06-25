@@ -11,6 +11,7 @@ const SourceFeedForm = ({comb, setComb}) => {
   };
 
   const [inputs, setInputs] = useState(emptyInputs);
+  const [isPending, setIsPending] = useState(false);
 
   const handleChange = e => {
     setInputs({
@@ -21,6 +22,7 @@ const SourceFeedForm = ({comb, setComb}) => {
   
   const handleSubmit = e => {
     e.preventDefault();
+    setIsPending(true);
     axios.post(
       `${serverUrl}/api/combs/${comb.id}/sourcefeeds`,
       {sourceFeed: inputs},
@@ -38,7 +40,8 @@ const SourceFeedForm = ({comb, setComb}) => {
           setInputs(emptyInputs);
         }
       })
-      .catch(e => console.error(e));
+      .catch(e => console.error(e))
+      .finally(() => setIsPending(false));
   };
 
   return (
@@ -92,6 +95,7 @@ const SourceFeedForm = ({comb, setComb}) => {
         <button
           className = "button is-success"
           type = "submit"
+          disabled = {isPending}
         >
           Add
         </button>
