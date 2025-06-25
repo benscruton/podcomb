@@ -19,8 +19,6 @@ import {
 import AppContext from "./context/AppContext";
 // import './App.css'
 
-console.log(process.env.NODE_ENV);
-
 const serverUrl = process.env.NODE_ENV === "development" || process.env.NODE_ENV === "postgres" ?
   "http://localhost:8000" : "";
 
@@ -33,8 +31,8 @@ const App = () => {
 
   useEffect(() => {
     axios.get(`${serverUrl}/api/info/host`)
-      .then(({data: {host}}) => {
-        setHostUrl
+      .then(({data}) => {
+        setHostUrl(data.hostUrl);
       })
       .catch(e => {
         console.error(e);
