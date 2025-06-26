@@ -37,15 +37,15 @@ const buildXml = ({xmlMetadata, channel, episodes}) => {
   xml += `\n    <title>${channel.title}</title>`;
   xml += `\n    <description><![CDATA[${channel.description}]]></description>`;
   xml += `\n    <language>${channel.language}</language>`;
-  xml += `\n    <itunes:image href="${channel["itunes:image"]}" />`;
-  xml += `\n    <itunes:category text="${channel["itunes:category"]}" />`
-  xml += `\n    <itunes:explicit>${channel["itunes:explicit"]}</itunes:explicit>`;
+  xml += `\n    <itunes:image href="${channel.image}" />`;
+  xml += `\n    <itunes:category text="${channel.category}" />`
+  xml += `\n    <itunes:explicit>${channel.explicit}</itunes:explicit>`;
 
   if(channel.link){
     xml += `\n    <link>${channel.link}</link>`
   }
-  if(channel["itunes:author"]){
-    xml += `\n    <itunes:author>${channel["itunes:author"]}</itunes:author>`;
+  if(channel.author){
+    xml += `\n    <itunes:author>${channel.author}</itunes:author>`;
   }
   if(!channel.isPublic){
     xml += "\n    <itunes:block>Yes</itunes:block>";

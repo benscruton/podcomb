@@ -1,5 +1,6 @@
 const axios = require("axios");
 const xml2js = require("xml2js");
+const escapeHtmlChars = require("./escapeHtmlChars");
 
 const combineShows = comb => {
   const feedPromises = comb.sourceFeeds.map(feed =>
@@ -15,14 +16,14 @@ const combineShows = comb => {
       return Promise.all(feedDataPromises)
         .then(feedDataArray => {
           const channel = {
-            title: comb.title,
+            title: escapeHtmlChars(comb.title),
             description: comb.description,
-            "itunes:image": comb.imageUrl,
-            language: comb.language,
-            "itunes:category": comb.category,
-            "itunes:explicit": comb.isExplicit ?
+            image: comb.imageUrl,
+            language: escapeHtmlChars(comb.language),
+            category: escapeHtmlChars(comb.category),
+            explicit: comb.isExplicit ?
               "yes" : "no",
-            "itunes:author": comb.author,
+            author: escapeHtmlChars(comb.author),
             isPublic: comb.isPublic
           };
           if(comb.link){
