@@ -14,4 +14,10 @@ podcastRoutes.route("/transform/:show")
 podcastRoutes.route("/combine/:show1/:show2")
   .get(podcastController.combine);
 
+podcastRoutes.route("/xml/:file")
+  .get(podcastController.staticXml);
+
+podcastRoutes.route("/cache/:show")
+  .get(podcastController.cacheFeed);
+
 module.exports = podcastRoutes;

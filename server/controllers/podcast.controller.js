@@ -1,23 +1,24 @@
 const axios = require("axios");
 const xml2js = require("xml2js");
 const path = require("path");
+const fs = require("fs");
 const {
   buildXml,
   combineShows,
   parseShowDataExample
 } = require("../utils");
 
+const urls = {
+  hrr: "https://rss.art19.com/hey-riddle-riddle",
+  trees: "https://rss.art19.com/completely-arbortrary",
+  ling: "https://feeds.soundcloud.com/users/soundcloud:users:237055046/sounds.rss",
+  hpatb: "https://anchor.fm/s/eb29d7e0/podcast/rss",
+  digham: "https://feeds.buzzsprout.com/652870.rss",
+};
+
 const test = (req, rsp) => rsp.json({pass: true});
 
 const relay = (req, rsp) => {
-  const urls = {
-    hrr: "https://rss.art19.com/hey-riddle-riddle",
-    trees: "https://rss.art19.com/completely-arbortrary",
-    ling: "https://feeds.soundcloud.com/users/soundcloud:users:237055046/sounds.rss",
-    hpatb: "https://anchor.fm/s/eb29d7e0/podcast/rss",
-    digham: "https://feeds.buzzsprout.com/652870.rss",
-  };
-
   const {show} = req.params;
 
   if(!urls[show]){
@@ -39,14 +40,6 @@ const relay = (req, rsp) => {
 };
 
 const transform = (req, rsp) => {
-  const urls = {
-    hrr: "https://rss.art19.com/hey-riddle-riddle",
-    trees: "https://rss.art19.com/completely-arbortrary",
-    ling: "https://feeds.soundcloud.com/users/soundcloud:users:237055046/sounds.rss",
-    hpatb: "https://anchor.fm/s/eb29d7e0/podcast/rss",
-    digham: "https://feeds.buzzsprout.com/652870.rss",
-  };
-
   const {show} = req.params;
   if(!urls[show]){
     return rsp.json({
@@ -75,14 +68,6 @@ const transform = (req, rsp) => {
 };
 
 const combine = (req, rsp) => {
-  const urls = {
-    hrr: "https://rss.art19.com/hey-riddle-riddle",
-    trees: "https://rss.art19.com/completely-arbortrary",
-    ling: "https://feeds.soundcloud.com/users/soundcloud:users:237055046/sounds.rss",
-    hpatb: "https://anchor.fm/s/eb29d7e0/podcast/rss",
-    digham: "https://feeds.buzzsprout.com/652870.rss",
-  };
-
   const {show1, show2} = req.params;
   if(!urls[show1] || !urls[show2]){
     return rsp.json({
@@ -101,9 +86,57 @@ const combine = (req, rsp) => {
     .catch(e => console.log(e));
 };
 
+const staticXml = (req, rsp) => {
+  const {file} = req.params;
+  const filepath = path.join(
+    __dirname,
+    "..",
+    "..",
+    "samples",
+    `${file}.xml`
+  );
+  fs.readFile(filepath, "utf-8", (e, xmlData) => {
+    if(e){
+      return rsp.json({success: false, error: e});
+    }
+    rsp.set("Content-Type", "text/xml");
+    rsp.send(xmlData);
+  });
+};
+
+const cacheFeed = (req, rsp) => {
+  const {show} = req.params;
+  if(!urls[show]){
+    return rsp.json({
+      show,
+      error: "Show not found"
+    });
+  }
+
+  axios.get(urls[show])
+    .then(({data: xmlData}) => {
+      const filepath = path.join(
+        __dirname,
+        "..",
+        "..",
+        "samples",
+        `${show}.xml`
+      );
+
+      fs.writeFile(filepath, xmlData, e => {
+        if(e){
+          return rsp.json({success: false, error: e});
+        }
+        return rsp.json({success: true, show});
+      });
+    });
+};
+
 module.exports = {
   test,
   relay,
   transform,
-  combine
+  combine,
+  staticXml,
+  cacheFeed
 };
