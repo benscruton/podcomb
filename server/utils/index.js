@@ -1,4 +1,5 @@
 const buildXml = require("./buildXml");
+const cacheCombXml = require("./cacheCombXml");
 const combineShows = require("./combineShows");
 const combineShowsExample = require("./combineShowsExample");
 const escapeHtmlChars = require("./escapeHtmlChars");
@@ -8,6 +9,7 @@ const getUserIdFromCookie = require("./getUserIdFromCookie");
 
 module.exports = {
   buildXml,
+  cacheCombXml,
   combineShows,
   combineShowsExample,
   escapeHtmlChars,

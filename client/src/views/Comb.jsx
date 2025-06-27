@@ -3,7 +3,8 @@ import {useParams, useNavigate} from "react-router";
 import axios from "axios";
 import {
   EditCombCard,
-  CombDetail
+  CombDetail,
+  CombActions
 } from "../components";
 import AppContext from "../context/AppContext";
 
@@ -15,6 +16,8 @@ const Comb = () => {
   const [comb, setComb] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isCaching, setIsCaching] = useState(false);
+  const [cacheButtonText, setCacheButtonText] = useState("Cache feed now");
 
   useEffect(() => {
     axios.get(
@@ -41,6 +44,32 @@ const Comb = () => {
       .catch(e => console.error(e));
   };
 
+  const cacheFeed = () => {
+    setIsCaching(true);
+    setCacheButtonText("Cache in progress...");
+    console.log("hello");
+    axios.put(
+      `${serverUrl}/api/combs/${comb.id}/cache`,
+      {},
+      {withCredentials: true}
+    )
+      .then(({data}) => {
+        console.log(data);
+        if(data.success){
+          setCacheButtonText("Success! (cache again)");
+          setIsCaching(false);
+        }
+        else{
+          throw new Error("Error caching feed");
+        }
+      })
+      .catch(e => {
+        console.error(e);
+        setCacheButtonText("Error. Try again?");
+        setIsCaching(false);
+      });
+  };
+
   return (
     <div className = "container">
 
@@ -59,21 +88,13 @@ const Comb = () => {
       }
 
       {comb && !isEditing ?
-        <p className = "mb-2 has-text-centered">
-          <button
-            className = "button has-background-warning"
-            onClick = {() => setIsEditing(true)}
-          >
-            Edit Comb
-          </button>
-
-          <button
-            className = "button has-background-danger mx-2"
-            onClick = {deleteComb}
-          >
-            Delete This Comb
-          </button>
-        </p>
+        <CombActions
+          setIsEditing = {setIsEditing}
+          cacheFeed = {cacheFeed}
+          deleteComb = {deleteComb}
+          isCaching = {isCaching}
+          cacheButtonText = {cacheButtonText}
+        />
         : <></>
       }
     </div>

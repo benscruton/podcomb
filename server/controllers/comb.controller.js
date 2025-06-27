@@ -1,5 +1,6 @@
 const {
   buildXml,
+  cacheCombXml,
   combineShows,
   getUserIdFromCookie,
   validators: {
@@ -180,6 +181,10 @@ const sendCombXml = async (req, rsp) => {
     {include: SourceFeed}
   );
 
+  if(!comb){
+    return rsp.status(404).json({success: false, error: "Comb not found"})
+  }
+
   combineShows(comb)
     .then(combinedData => {
       const xml = buildXml(combinedData);
@@ -193,6 +198,22 @@ const sendCombXml = async (req, rsp) => {
     })
 };
 
+const cacheFeed = async (req, rsp) => {
+  console.log("hello");
+  const {combId} = req.params;
+  const comb = await Comb.findByPk(
+    combId,
+    {include: SourceFeed}
+  );
+  
+  if(!comb){
+    return rsp.status(404).json({success: false, error: "Comb not found"})
+  }
+
+  const cacheResult = await cacheCombXml(comb);
+  rsp.json(cacheResult);
+};
+
 module.exports = {
   createComb,
   getComb,
@@ -201,5 +222,6 @@ module.exports = {
   getUserCombs,
   addSourceFeed,
   deleteSourceFeed,
-  sendCombXml
+  sendCombXml,
+  cacheFeed
 };
