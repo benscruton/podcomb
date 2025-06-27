@@ -1,4 +1,4 @@
-const CombActions = ({setIsEditing, cacheFeed, isCaching, cacheButtonText, deleteComb}) => {
+const CombActions = ({setIsEditing, deleteComb}) => {
   return (
     <p className = "mb-2 has-text-centered">
       <button
@@ -6,14 +6,6 @@ const CombActions = ({setIsEditing, cacheFeed, isCaching, cacheButtonText, delet
         onClick = {() => setIsEditing(true)}
       >
         Edit Comb
-      </button>
-
-      <button
-        className = "button has-background-info mx-2"
-        onClick = {cacheFeed}
-        disabled = {isCaching}
-      >
-        {cacheButtonText}
       </button>
 
       <button

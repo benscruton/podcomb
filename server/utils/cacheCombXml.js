@@ -22,8 +22,16 @@ const cacheCombXml = async comb => {
       const filePath = path.join(dirPath, `${comb.id}.xml`);
 
       fs.writeFileSync(filePath, xml);
+      const cacheTimestamp = Date.now();
 
-      return {success: true, filePath};
+      comb.cachedAt = cacheTimestamp;
+      comb.save();
+
+      return {
+        success: true,
+        cacheTimestamp,
+        filePath
+      };
     })
     .catch(e => {
       console.log(e);

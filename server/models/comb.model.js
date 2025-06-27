@@ -49,6 +49,14 @@ const Comb = sequelize.define(
     isPublic: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
+    },
+
+    cacheInterval: {
+      type: DataTypes.INTEGER
+    },
+
+    cachedAt: {
+      type: DataTypes.DATE
     }
   },
   {tableName: "combs"}

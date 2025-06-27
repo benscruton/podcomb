@@ -1,3 +1,6 @@
+const fs = require("fs");
+const path = require("path");
+
 const {
   buildXml,
   cacheCombXml,
@@ -44,7 +47,7 @@ const createComb = async (req, rsp) => {
   }
   catch(e){
     console.log(e);
-    rsp.json({success: false, error: e});
+    rsp.json({success: false, error: e.message});
   }
 };
 
@@ -65,7 +68,7 @@ const getComb = (req, rsp) => {
   })
   .catch(e => {
     console.log(e);
-    rsp.status(400).json({success: false, error: e});
+    rsp.status(400).json({success: false, error: e.message});
   });
 };
 
@@ -107,7 +110,7 @@ const updateComb = async (req, rsp) => {
     });
   }
   catch(e){
-    rsp.status(400).json({success: false, error: e});
+    rsp.status(400).json({success: false, error: e.message});
   }
 };
 
@@ -119,7 +122,7 @@ const deleteComb = async (req, rsp) => {
     rsp.json({success: true, combId});
   }
   catch(e){
-    rsp.status(400).json({success: false, error: e});
+    rsp.status(400).json({success: false, error: e.message});
   }
 };
 
@@ -158,7 +161,7 @@ const addSourceFeed = async (req, rsp) => {
   }
   catch(e){
     console.log(e);
-    rsp.json({success: false, error: e});
+    rsp.json({success: false, error: e.message});
   }
 };
 
@@ -170,7 +173,7 @@ deleteSourceFeed = async (req, rsp) => {
     rsp.json({success: true, sourceFeedId});
   }
   catch(e){
-    rsp.status(400).json({success: false, error: e});
+    rsp.status(400).json({success: false, error: e.message});
   }
 };
 
@@ -194,12 +197,11 @@ const sendCombXml = async (req, rsp) => {
     })
     .catch(e => {
       console.log(e);
-      rsp.json({success: false, error: e});
+      rsp.status(400).json({success: false, error: e.message});
     })
 };
 
 const cacheFeed = async (req, rsp) => {
-  console.log("hello");
   const {combId} = req.params;
   const comb = await Comb.findByPk(
     combId,
@@ -210,8 +212,42 @@ const cacheFeed = async (req, rsp) => {
     return rsp.status(404).json({success: false, error: "Comb not found"})
   }
 
-  const cacheResult = await cacheCombXml(comb);
-  rsp.json(cacheResult);
+  const {cacheNow} = req.body;
+  if(cacheNow){
+    const cacheResult = await cacheCombXml(comb);
+    return rsp.json(cacheResult);
+  }
+
+  rsp.json({success: false});
+};
+
+const deleteCache = async (req, rsp) => {
+  const {combId} = req.params;
+  try{
+    const comb = await Comb.findByPk(combId);
+    const filePath = path.join(
+      __dirname,
+      "..",
+      "cache",
+      "xml",
+      comb.userId,
+      `${combId}.xml`
+    );
+    if(!fs.existsSync(filePath)){
+      return rsp.json({
+        success: false,
+        message: "No cache file exists for this comb"
+      });
+    }
+    fs.rmSync(filePath);
+    comb.cachedAt = null;
+    comb.save();
+    rsp.json({success: true});
+  }
+  catch(e){
+    console.log(e);
+    rsp.status(400).json({success: false, error: e.message});
+  }
 };
 
 module.exports = {
@@ -223,5 +259,6 @@ module.exports = {
   addSourceFeed,
   deleteSourceFeed,
   sendCombXml,
-  cacheFeed
+  cacheFeed,
+  deleteCache
 };

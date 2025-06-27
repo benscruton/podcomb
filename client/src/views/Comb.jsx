@@ -16,8 +16,6 @@ const Comb = () => {
   const [comb, setComb] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [isCaching, setIsCaching] = useState(false);
-  const [cacheButtonText, setCacheButtonText] = useState("Cache feed now");
 
   useEffect(() => {
     axios.get(
@@ -44,32 +42,6 @@ const Comb = () => {
       .catch(e => console.error(e));
   };
 
-  const cacheFeed = () => {
-    setIsCaching(true);
-    setCacheButtonText("Cache in progress...");
-    console.log("hello");
-    axios.put(
-      `${serverUrl}/api/combs/${comb.id}/cache`,
-      {},
-      {withCredentials: true}
-    )
-      .then(({data}) => {
-        console.log(data);
-        if(data.success){
-          setCacheButtonText("Success! (cache again)");
-          setIsCaching(false);
-        }
-        else{
-          throw new Error("Error caching feed");
-        }
-      })
-      .catch(e => {
-        console.error(e);
-        setCacheButtonText("Error. Try again?");
-        setIsCaching(false);
-      });
-  };
-
   return (
     <div className = "container">
 
@@ -90,10 +62,7 @@ const Comb = () => {
       {comb && !isEditing ?
         <CombActions
           setIsEditing = {setIsEditing}
-          cacheFeed = {cacheFeed}
           deleteComb = {deleteComb}
-          isCaching = {isCaching}
-          cacheButtonText = {cacheButtonText}
         />
         : <></>
       }

@@ -14,13 +14,14 @@ combRoutes.route("/:combId")
   .put(authentication.clientToken, combController.updateComb)
   .delete(authentication.clientToken, combController.deleteComb);
 
-combRoutes.route("/:combId/cache")
-  .put(authentication.clientToken, combController.cacheFeed);
-
 combRoutes.route("/:combId/sourcefeeds")
   .post(authentication.clientToken,combController.addSourceFeed);
 
 combRoutes.route("/:combId/sourcefeeds/:sourceFeedId")
   .delete(authentication.clientToken, combController.deleteSourceFeed);
+
+combRoutes.route("/:combId/cache")
+  .put(authentication.clientToken, combController.cacheFeed)
+  .delete(authentication.clientToken, combController.deleteCache);
 
 module.exports = combRoutes;

@@ -2,6 +2,7 @@ import {useContext, useState} from "react";
 import axios from "axios";
 import AppContext from "../context/AppContext";
 import {
+  FeedCacheCard,
   SourceFeedBox,
   SourceFeedForm
 } from ".";
@@ -114,6 +115,14 @@ const CombDetail = ({comb, isLoaded, setComb}) => {
               </span>
               {comb.isPublic ? "Yes" : "No"}
             </p>
+
+            <h2 className = "title is-3 mt-4 mb-1">
+              Feed Caching
+            </h2>
+            <FeedCacheCard
+              comb = {comb}
+              setComb = {setComb}
+            />
 
             <h2 className = "title is-3 mt-4 mb-1">
               Source Feeds

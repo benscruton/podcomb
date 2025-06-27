@@ -23,7 +23,7 @@ const SourceFeedBox = ({sourceFeed, removeSourceFeed, combImageUrl, setComb}) =>
   
   return (
     <div
-      className = "box"
+      className = "box has-background-light"
       key = {sourceFeed.id}
     >
       <div className = "media">
