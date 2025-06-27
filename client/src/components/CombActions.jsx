@@ -11,6 +11,7 @@ const CombActions = ({setIsEditing, cacheFeed, isCaching, cacheButtonText, delet
       <button
         className = "button has-background-info mx-2"
         onClick = {cacheFeed}
+        disabled = {isCaching}
       >
         {cacheButtonText}
       </button>
@@ -18,7 +19,6 @@ const CombActions = ({setIsEditing, cacheFeed, isCaching, cacheButtonText, delet
       <button
         className = "button has-background-danger mx-2"
         onClick = {deleteComb}
-        disabled = {isCaching}
       >
         Delete This Comb
       </button>
