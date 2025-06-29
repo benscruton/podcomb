@@ -1,10 +1,8 @@
-const fs = require("fs");
-const path = require("path");
-
 const {
   buildXml,
   cacheCombXml,
   combineShows,
+  deleteCombXmlCache,
   getUserIdFromCookie,
   validators: {
     combValidator,
@@ -223,31 +221,15 @@ const cacheFeed = async (req, rsp) => {
 
 const deleteCache = async (req, rsp) => {
   const {combId} = req.params;
-  try{
-    const comb = await Comb.findByPk(combId);
-    const filePath = path.join(
-      __dirname,
-      "..",
-      "cache",
-      "xml",
-      comb.userId,
-      `${combId}.xml`
-    );
-    if(!fs.existsSync(filePath)){
-      return rsp.json({
-        success: false,
-        message: "No cache file exists for this comb"
-      });
-    }
-    fs.rmSync(filePath);
-    comb.cachedAt = null;
-    comb.save();
-    rsp.json({success: true});
+  const comb = await Comb.findByPk(combId);
+  if(!comb){
+    return rsp.status(404).json({success: false, error: "Comb not found"})
   }
-  catch(e){
-    console.log(e);
-    rsp.status(400).json({success: false, error: e.message});
+  const result = deleteCombXmlCache(comb);
+  if(result.error){
+    rsp.status(400);
   }
+  rsp.json(result);
 };
 
 module.exports = {

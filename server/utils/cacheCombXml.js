@@ -3,7 +3,7 @@ const path = require("path");
 const combineShows = require("./combineShows");
 const buildXml = require("./buildXml");
 
-const cacheCombXml = async comb => {
+const cacheCombXml = comb => {
   return combineShows(comb)
     .then(combinedData => {
       const xml = buildXml(combinedData);
