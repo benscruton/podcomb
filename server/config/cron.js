@@ -17,6 +17,4 @@ Comb.findAll({
     );
   });
 
-
-
 module.exports = crontab;

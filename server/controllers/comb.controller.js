@@ -9,12 +9,14 @@ const {
     combUpdateValidator,
     sourceFeedValidator
   },
+  startXmlCacheCronJob,
 } = require("../utils");
 const {
   Comb,
   SourceFeed,
   User
 } = require("../models");
+const crontab = require("../config/cron");
 
 const createComb = async (req, rsp) => {
   try{
@@ -210,13 +212,25 @@ const cacheFeed = async (req, rsp) => {
     return rsp.status(404).json({success: false, error: "Comb not found"})
   }
 
-  const {cacheNow} = req.body;
+  const {cacheNow, cacheInterval} = req.body;
+  
   if(cacheNow){
     const cacheResult = await cacheCombXml(comb);
-    return rsp.json(cacheResult);
+    if(cacheResult.success === false){
+      return rsp.json(cacheResult);
+    }
   }
 
-  rsp.json({success: false});
+  if(cacheInterval !== undefined){
+    comb.cacheInterval = cacheInterval;
+    comb.save();
+    const jobResult = startXmlCacheCronJob(comb, crontab);
+    if(jobResult.success === false){
+      return rsp.json(jobResult);
+    }
+  }
+
+  rsp.json({success: true});
 };
 
 const deleteCache = async (req, rsp) => {

@@ -9,6 +9,20 @@ const FeedCacheCard = ({comb, setComb}) => {
   const [displayInfo, setDisplayInfo] = useState(false);
   const toggleInfo = () => setDisplayInfo(!displayInfo);
 
+  const cacheIntervalOptions = [
+    {value: null, text: "Do not cache this comb"},
+    {value: 1, text: "hour"},
+    {value: 2, text: "2 hours"},
+    {value: 3, text: "3 hours"},
+    {value: 4, text: "4 hours"},
+    {value: 6, text: "6 hours"},
+    {value: 8, text: "8 hours"},
+    {value: 12, text: "12 hours"},
+    {value: 24, text: "day"}
+  ];
+
+  const [intervalInput, setIntervalInput] = useState(comb.cacheInterval);
+
   const cacheFeed = () => {
     setIsCaching(true);
     axios.put(
@@ -49,6 +63,32 @@ const FeedCacheCard = ({comb, setComb}) => {
       .catch(e => console.error(e));
   };
 
+  const handleSelect = e => {
+    setIntervalInput(e.target.value);
+  };
+
+  const handleSubmitInterval = e => {
+    e.preventDefault();
+    axios.put(
+      `${serverUrl}/api/combs/${comb.id}/cache`,
+      {cacheInterval: intervalInput},
+      {withCredentials: true}
+    )
+      .then(({data}) => {
+        if(data.success){
+          setComb({...comb,
+            cacheInterval: intervalInput
+          });
+        }
+        else{
+          throw new Error("Error scheduling cache");
+        }
+      })
+      .catch(e => {
+        console.error(e);
+      });
+  };
+
   return (
     <div className = "card">
       <div className = "card-content">
@@ -80,6 +120,39 @@ const FeedCacheCard = ({comb, setComb}) => {
             Show details
           </button>
         }
+
+        <form
+          className = "my-5"
+          onSubmit = {handleSubmitInterval}
+        >
+          <p>
+            Cache this comb every...
+          </p>
+          <p className = "my-2 select">
+            <select
+              value = {intervalInput}
+              onChange = {handleSelect}
+            >
+              {cacheIntervalOptions.map(option =>
+                <option
+                  key = {option.value}
+                  value = {option.value}
+                >
+                  {option.text}
+                </option>
+              )}
+            </select>
+          </p>
+          <p>
+            <button
+              className = "button"
+              type = "submit"
+              disabled = {intervalInput === comb.cacheInterval}
+            >
+              Update cache interval
+            </button>
+          </p>
+        </form>
 
         <p>
           {comb.cachedAt ?
