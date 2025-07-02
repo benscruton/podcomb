@@ -9,7 +9,7 @@ import {
 import AppContext from "../context/AppContext";
 
 const Comb = () => {
-  const {serverUrl} = useContext(AppContext);
+  const {serverUrl, logOut} = useContext(AppContext);
   const {combId} = useParams();
   const navigate = useNavigate();
   
@@ -25,7 +25,16 @@ const Comb = () => {
       .then(({data}) => {
         setComb(data.comb);
       })
-      .catch(e => console.error(e))
+      .catch(e => {
+        if(e.status === 401){
+          logOut({
+            title: "Session timed out; please log in again.",
+            color: "warning"
+          });
+          return navigate("/login");
+        }
+        console.error(e)
+      })
       .finally(() => setIsLoaded(true));
   }, [combId]);
 
