@@ -7,6 +7,7 @@ const escapeHtmlChars = require("./escapeHtmlChars");
 const validators = require("./validators");
 const parseShowDataExample = require("./parseShowDataExample");
 const getUserIdFromCookie = require("./getUserIdFromCookie");
+const startXmlCacheCronJob = require("./startXmlCacheCronJob")
 
 module.exports = {
   buildXml,
@@ -17,5 +18,6 @@ module.exports = {
   escapeHtmlChars,
   getUserIdFromCookie,
   validators,
-  parseShowDataExample
+  parseShowDataExample,
+  startXmlCacheCronJob
 };

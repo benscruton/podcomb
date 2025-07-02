@@ -18,8 +18,12 @@ app.use(
   require("./server/routes")
 );
 
-// Connect to database
-// require("./server/config/sequelize");
+// Load models and connect to database
 require("./server/models");
+
+// Load cron jobs (for caching XML)
+require("./server/config/cron");
+
+
 
 app.listen(port, () => console.log(`Listening on Port ${port}...`));
