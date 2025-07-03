@@ -1,5 +1,6 @@
 const cron = require("node-cron");
 const cacheCombXml = require("./cacheCombXml");
+const deleteCombXmlCache = require("./deleteCombXmlCache");
 
 const startXmlCacheCronJob = (comb, crontab) => {
   try{
@@ -12,7 +13,24 @@ const startXmlCacheCronJob = (comb, crontab) => {
       crontab[comb.userId][comb.id].destroy();
     }
 
-    const expression = `0 ${comb.cacheInterval === 1 ? "*" : `*/${comb.cacheInterval}`} * * *`;
+    if(comb.cacheInterval === null){
+      return (comb.cachedAt ?
+        deleteCombXmlCache(comb)
+        :
+        {success: true}
+      );
+    }
+
+    let expression;
+    if(comb.cacheInterval === 1){
+      expression = "0 * * * *";
+    }
+    else if(comb.cacheInterval === 24){
+      expression = "0 0 * * *";
+    }
+    else(
+      expression = `0 */${comb.cacheInterval} * * *`
+    )
 
     const job = cron.schedule(expression, () => {
       cacheCombXml(comb);

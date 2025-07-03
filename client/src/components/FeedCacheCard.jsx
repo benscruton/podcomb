@@ -10,7 +10,7 @@ const FeedCacheCard = ({comb, setComb}) => {
   const toggleInfo = () => setDisplayInfo(!displayInfo);
 
   const cacheIntervalOptions = [
-    {value: null, text: "Do not cache this comb"},
+    {value: 0, text: "Do not cache this comb"},
     {value: 1, text: "hour"},
     {value: 2, text: "2 hours"},
     {value: 3, text: "3 hours"},
@@ -21,7 +21,7 @@ const FeedCacheCard = ({comb, setComb}) => {
     {value: 24, text: "day"}
   ];
 
-  const [intervalInput, setIntervalInput] = useState(comb.cacheInterval);
+  const [intervalInput, setIntervalInput] = useState(comb.cacheInterval || 0);
 
   const cacheFeed = () => {
     setIsCaching(true);
@@ -31,10 +31,11 @@ const FeedCacheCard = ({comb, setComb}) => {
       {withCredentials: true}
     )
       .then(({data}) => {
+        console.log(data);
         if(data.success){
           setIsCaching(false);
           setComb({...comb,
-            cachedAt: data.cacheTimestamp
+            cachedAt: new Date(data.cacheTimestamp)
           });
         }
         else{
@@ -77,7 +78,7 @@ const FeedCacheCard = ({comb, setComb}) => {
       .then(({data}) => {
         if(data.success){
           setComb({...comb,
-            cacheInterval: intervalInput
+            cacheInterval: parseInt(intervalInput)
           });
         }
         else{
@@ -92,6 +93,14 @@ const FeedCacheCard = ({comb, setComb}) => {
   return (
     <div className = "card">
       <div className = "card-content">
+        <p>
+          Current cache setting: {comb.cacheInterval ? 
+            "Once every" + cacheIntervalOptions.filter(o => o.value === comb.cacheInterval)[0]?.text || "Sorry, something went wrong"
+            :
+            "No caching"
+          }
+        </p>
+
         {displayInfo ? 
           <div className = "message"><div className = "message-body">
             <p>
@@ -117,7 +126,7 @@ const FeedCacheCard = ({comb, setComb}) => {
             className = "button mb-2"
             onClick = {toggleInfo}
           >
-            Show details
+            More info
           </button>
         }
 
@@ -125,6 +134,9 @@ const FeedCacheCard = ({comb, setComb}) => {
           className = "my-5"
           onSubmit = {handleSubmitInterval}
         >
+          <h3 className = "title is-5">
+            Update Cache Frequency
+          </h3>
           <p>
             Cache this comb every...
           </p>
@@ -147,7 +159,7 @@ const FeedCacheCard = ({comb, setComb}) => {
             <button
               className = "button"
               type = "submit"
-              disabled = {intervalInput === comb.cacheInterval}
+              disabled = {intervalInput == comb.cacheInterval}
             >
               Update cache interval
             </button>

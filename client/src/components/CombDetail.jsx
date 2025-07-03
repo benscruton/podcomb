@@ -46,6 +46,21 @@ const CombDetail = ({comb, isLoaded, setComb}) => {
               {comb.title}
             </h1>
 
+            {comb.cachedAt && !comb.cacheInterval ?
+              <div className = "message is-warning">
+                <header className = "message-header">
+                  Warning: Possible Stale Feed
+                </header>
+
+                <div className = "message-body">
+                  This comb currently has a cache file, but does not have a cache interval set. This means the cache won't update unless you perform a manual update. With these settings, you may miss new episodes that are added to the feed.
+
+                  For best results, it is recommended either to set a cache interval or to delete your cache file.
+                </div>
+              </div>
+              : <></>
+            }
+
             <p className = "mb-2 has-text-success">
               <button
                 className = "button is-info mr-2"

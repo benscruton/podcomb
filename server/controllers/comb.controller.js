@@ -187,6 +187,7 @@ const sendCombXml = async (req, rsp) => {
   if(!comb){
     return rsp.status(404).json({success: false, error: "Comb not found"})
   }
+  
 
   combineShows(comb)
     .then(combinedData => {
@@ -213,24 +214,28 @@ const cacheFeed = async (req, rsp) => {
   }
 
   const {cacheNow, cacheInterval} = req.body;
+
+  let response = {};
   
   if(cacheNow){
     const cacheResult = await cacheCombXml(comb);
     if(cacheResult.success === false){
       return rsp.json(cacheResult);
     }
+    response = {...response, ...cacheResult};
   }
 
   if(cacheInterval !== undefined){
-    comb.cacheInterval = cacheInterval;
+    comb.cacheInterval = parseInt(cacheInterval) || null;
     comb.save();
     const jobResult = startXmlCacheCronJob(comb, crontab);
     if(jobResult.success === false){
       return rsp.json(jobResult);
     }
+    response = {...response, ...jobResult};
   }
 
-  rsp.json({success: true});
+  rsp.json(response);
 };
 
 const deleteCache = async (req, rsp) => {
