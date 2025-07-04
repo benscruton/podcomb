@@ -1,3 +1,5 @@
+const fs = require("fs");
+const path = require("path");
 const {
   buildXml,
   cacheCombXml,
@@ -17,6 +19,13 @@ const {
   User
 } = require("../models");
 const crontab = require("../config/cron");
+
+const xmlCacheDirPath = path.join(
+  __dirname,
+  "..",
+  "cache",
+  "xml"
+);
 
 const createComb = async (req, rsp) => {
   try{
@@ -188,11 +197,36 @@ const sendCombXml = async (req, rsp) => {
     return rsp.status(404).json({success: false, error: "Comb not found"})
   }
   
+  // Send cache file if it exists
+  if(comb.cachedAt){
+    const xmlCacheFilePath = path.join(
+      xmlCacheDirPath,
+      comb.userId,
+      `${comb.id}.xml`
+    );
+    if(fs.existsSync(xmlCacheFilePath)){
+      return fs.readFile(
+        xmlCacheFilePath,
+        "utf-8",
+        (e, xmlData) => {
+          if(e){
+            return rsp.json({success: false, error: e});
+          }
+          rsp.set("Content-Type", "text/xml");
+          rsp.send(xmlData);
+        }
+      );
+    }
+    else{
+      // If comb has cachedAt timestamp but no file
+      comb.cachedAt = null;
+      comb.save();
+    }
+  }
 
   combineShows(comb)
     .then(combinedData => {
       const xml = buildXml(combinedData);
-
       rsp.set("Content-Type", "text/xml");
       rsp.send(xml);
     })

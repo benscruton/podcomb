@@ -31,7 +31,6 @@ const FeedCacheCard = ({comb, setComb}) => {
       {withCredentials: true}
     )
       .then(({data}) => {
-        console.log(data);
         if(data.success){
           setIsCaching(false);
           setComb({...comb,
@@ -95,7 +94,7 @@ const FeedCacheCard = ({comb, setComb}) => {
       <div className = "card-content">
         <p>
           Current cache setting: {comb.cacheInterval ? 
-            "Once every" + cacheIntervalOptions.filter(o => o.value === comb.cacheInterval)[0]?.text || "Sorry, something went wrong"
+            "Once every " + cacheIntervalOptions.filter(o => o.value === comb.cacheInterval)[0]?.text || "Sorry, something went wrong"
             :
             "No caching"
           }
