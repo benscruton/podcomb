@@ -2,6 +2,7 @@ import {useContext, useState} from "react";
 import {useNavigate} from "react-router";
 import axios from "axios";
 import AppContext from "../context/AppContext";
+import {FormField} from ".";
 
 const CombForm = ({comb, setComb, setIsEditing}) => {
   const {serverUrl} = useContext(AppContext);
@@ -79,177 +80,92 @@ const CombForm = ({comb, setComb, setIsEditing}) => {
         </p>
         : <></>
       }
+
       {/* TITLE */}
-      <div className = "field">
-        <label
-          className = "label"
-          htmlFor = "title"
-        >
-          Title
-        </label>
-        <div className = "control">
-          <input
-            className = "input"
-            type = "text"
-            name = "title"
-            id = "title"
-            onChange = {handleChange}
-            value = {inputs.title}
-          />
-        </div>
-      </div>
+      <FormField
+        label = "Title"
+        name = "title"
+        inputType = "text"
+        value = {inputs.title}
+        handleChange = {handleChange}
+      />
 
       {/* AUTHOR */}
-      <div className = "field">
-        <label
-          className = "label"
-          htmlFor = "author"
-        >
-          Author(s)
-        </label>
-        <div className = "control">
-          <input
-            className = "input"
-            type = "text"
-            name = "author"
-            id = "author"
-            onChange = {handleChange}
-            value = {inputs.author}
-          />
-        </div>
-      </div>
+      <FormField
+        label = "Author(s)"
+        name = "author"
+        inputType = "text"
+        value = {inputs.author}
+        handleChange = {handleChange}
+      />
       
-      {/* DESCRIPTION*/}
-      <div className = "field">
-        <label
-          className = "label"
-          htmlFor = "description"
-        >
-          Description
-        </label>
-        <textarea
-          className = "textarea"
-          name = "description"
-          id = "description"
-          onChange = {handleChange}
-          value = {inputs.description}
-        />
-      </div>
+      {/* DESCRIPTION */}
+      <FormField
+        label = "Description"
+        name = "description"
+        inputType = "textarea"
+        value = {inputs.description}
+        handleChange = {handleChange}
+      />
 
       {/* LANGUAGE */}
-      <div className = "field">
-        <label
-          className = "label"
-          htmlFor = "language"
-        >
-          Language
-        </label>
-        <div className = "control">
-          <input
-            className = "input"
-            type = "text"
-            name = "language"
-            id = "language"
-            onChange = {handleChange}
-            value = {inputs.language}
-            placeholder = "Default: en"
-          />
-        </div>
-      </div>
+      <FormField
+        label = "Language"
+        name = "language"
+        inputType = "text"
+        value = {inputs.language}
+        handleChange = {handleChange}
+        placeholder = "Default: en"
+      />
       
       {/* IMAGE URL */}
-      <div className = "field">
-        <label
-          className = "label"
-          htmlFor = "imageUrl"
-        >
-          Image URL
-        </label>
-        <div className = "control">
-          <input
-            className = "input"
-            type = "text"
-            name = "imageUrl"
-            id = "imageUrl"
-            onChange = {handleChange}
-            value = {inputs.imageUrl}
-            placeholder = "Direct link to an image"
-          />
-        </div>
-      </div>
+      <FormField
+        label = "Image URL"
+        name = "imageUrl"
+        inputType = "text"
+        value = {inputs.imageUrl}
+        handleChange = {handleChange}
+        placeholder = "Direct link to an image"
+      />
 
       {/* CATEGORY */}
-      <div className = "field">
-        <label
-          className = "label"
-          htmlFor = "category"
-        >
-          Category
-        </label>
-        <div className = "control">
-          <input
-            className = "input"
-            type = "text"
-            name = "category"
-            id = "category"
-            onChange = {handleChange}
-            value = {inputs.category}
-          />
-        </div>
-      </div>
+      <FormField
+        label = "Category"
+        name = "category"
+        inputType = "text"
+        value = {inputs.category}
+        handleChange = {handleChange}
+      />
 
       {/* LINK */}
-      <div className = "field">
-        <label
-          className = "label"
-          htmlFor = "link"
-        >
-          Link (optional)
-        </label>
-        <div className = "control">
-          <input
-            className = "input"
-            type = "text"
-            name = "link"
-            id = "link"
-            onChange = {handleChange}
-            value = {inputs.link}
-          />
-        </div>
-      </div>
+      <FormField
+        label = "Link (optional"
+        name = "link"
+        inputType = "text"
+        value = {inputs.link}
+        handleChange = {handleChange}
+      />
 
       <div className = "field columns">
         {/* EXPLICIT ? */}
-        <div className = "column is-half">
-          <label className = "checkbox">
-            <input
-              type = "checkbox"
-              name = "isExplicit"
-              id = "isExplicit"
-              onChange = {handleChange}
-              checked = {inputs.isExplicit}
-            />
-            <strong className = "pl-2">
-              Explicit
-            </strong>
-          </label>
-        </div>
+        <FormField
+          label = "Explicit"
+          name = "isExplicit"
+          inputType = "checkbox"
+          value = {inputs.isExplicit}
+          handleChange = {handleChange}
+          classes = "column is-half"
+        />
 
         {/* PUBLIC ? */}
-        <div className = "column is-half">
-          <label className = "checkbox">
-            <input
-              type = "checkbox"
-              name = "isPublic"
-              id = "isPublic"
-              onChange = {handleChange}
-              checked = {inputs.isPublic}
-            />
-            <strong className = "pl-2">
-              Public
-            </strong>
-          </label>
-        </div>
+        <FormField
+          label = "Publicly discoverable"
+          name = "isPublic"
+          inputType = "checkbox"
+          value = {inputs.isPublic}
+          handleChange = {handleChange}
+          classes = "column is-half"
+        />
       </div>
 
       {/* SUBMIT BUTTON */}
