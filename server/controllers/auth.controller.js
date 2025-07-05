@@ -34,8 +34,15 @@ const register = (req, rsp) => {
 };
 
 const login = (req, rsp) => {
-  if(!req.body.password || !(req.body.username || req.body.email)){
-    return rsp.json({success: false, error: "Must include an email or a username, as well as a password."});
+  if(!(req.body.username || req.body.email) || !req.body.password){
+    const errors = {}
+    if(!(req.body.username || req.body.email)){
+        errors.username = "Must include username or email";
+    }
+    if(!req.body.password){
+      errors.password = "Must include a password";
+    }
+    return rsp.json({success: false, errors})
   }
   
   User.findOne({
@@ -46,14 +53,17 @@ const login = (req, rsp) => {
   })
     .then(user => {
       if(!user){
-        return rsp.json({success: false, error: "User not found"});
+        return rsp.json({
+          success: false,
+          errors: {username: "User not found"}
+        });
       }
       bcrypt.compare(req.body.password, user.password)
         .then(match => {
           if(!match){
             return rsp.json({
               success: false,
-              error: "Passwords didn't match."
+              errors: {password: "Invalid password"}
             });
           }
           // If successful login attempt:
@@ -70,7 +80,10 @@ const login = (req, rsp) => {
         })
         .catch(e => {
           console.log(e);
-          return rsp.status(400).json({success: false, error: e});
+          return rsp.status(400).json({
+            success: false,
+            errors: {username: e.message}
+          });
         });
 
     })

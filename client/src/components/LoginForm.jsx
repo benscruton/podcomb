@@ -2,6 +2,7 @@ import {useContext, useState} from "react";
 import {useNavigate} from "react-router";
 import axios from "axios";
 import AppContext from "../context/AppContext";
+import {FormField} from ".";
 
 const LoginForm = () => {
   const {serverUrl, setUserData} = useContext(AppContext);
@@ -13,16 +14,25 @@ const LoginForm = () => {
   };
 
   const [inputs, setInputs] = useState(emptyInputs);
+  const [errors, setErrors] = useState(emptyInputs);
   
   const handleChange = e => {
-    setInputs({
-      ...inputs,
+    setInputs({...inputs,
       [e.target.name]: e.target.value
+    });
+    setErrors({...errors,
+      [e.target.name]: ""
     });
   };
   
   const handleSubmit = e => {
     e.preventDefault();
+    if(!inputs.username || !inputs.password){
+      return setErrors({...errors,
+        username: inputs.username ? "" : "Must include username or email",
+        password: inputs.password ? "" : "Must include a password"
+      });
+    }
     if(inputs.username.includes("@")){
       inputs.email = inputs.username;
       delete inputs.username;
@@ -32,15 +42,19 @@ const LoginForm = () => {
       inputs,
       {withCredentials: true}
     )
-      .then(rsp => {
-        if(rsp.data.success){
-          setUserData(rsp.data.user);
+      .then(({data}) => {
+        console.log(data);
+        if(data.success){
+          setUserData(data.user);
           localStorage.setItem(
             "userData",
-            JSON.stringify(rsp.data.user)
+            JSON.stringify(data.user)
           );
           setInputs(emptyInputs);
-          navigate("/");
+          return navigate("/");
+        }
+        if(data.errors){
+          setErrors(data.errors);
         }
       })
       .catch(e => console.error(e.message))
@@ -52,44 +66,24 @@ const LoginForm = () => {
       onSubmit = {handleSubmit}
     >
       {/* USERNAME */}
-      <div className = "field">
-        <label
-          className = "label"
-          htmlFor = "username"
-        >
-          Username or Email Address
-        </label>
-        <div className = "control">
-          <input
-            className = "input"
-            type = "text"
-            name = "username"
-            id = "username"
-            onChange = {handleChange}
-            value = {inputs.username}
-          />
-        </div>
-      </div>
+      <FormField
+        label = "Username or email address"
+        name = "username"
+        inputType = "text"
+        value = {inputs.username}
+        handleChange = {handleChange}
+        error = {errors.username}
+      />
 
       {/* PASSWORD */}
-      <div className = "field">
-        <label
-          className = "label"
-          htmlFor = "password"
-        >
-          Password
-        </label>
-        <div className = "control">
-          <input
-            className = "input"
-            type = "password"
-            name = "password"
-            id = "password"
-            onChange = {handleChange}
-            value = {inputs.password}
-          />
-        </div>
-      </div>
+      <FormField
+        label = "Password"
+        name = "password"
+        inputType = "password"
+        value = {inputs.password}
+        handleChange = {handleChange}
+        error = {errors.password}
+      />
 
       <div className = "has-text-centered">
       <button

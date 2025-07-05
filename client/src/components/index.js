@@ -4,6 +4,7 @@ import CombDetail from "./CombDetail";
 import CombForm from "./CombForm";
 import EditCombCard from "./EditCombCard";
 import FeedCacheCard from "./FeedCacheCard";
+import FormField from "./FormField";
 import LoginForm from "./LoginForm";
 import LogRegCard from "./LogRegCard";
 import NavBar from "./NavBar";
@@ -18,6 +19,7 @@ export {
   CombForm,
   EditCombCard,
   FeedCacheCard,
+  FormField,
   LoginForm,
   LogRegCard,
   NavBar,
