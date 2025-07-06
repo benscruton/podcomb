@@ -19,8 +19,13 @@ const CombForm = ({comb, setComb, setIsEditing}) => {
     isExplicit: comb?.isExplicit || false,
     isPublic: comb?.isPublic || false
   };
+  const initialErrors = {
+    title: "",
+    language: ""
+  };
 
   const [inputs, setInputs] = useState(initialInputs);
+  const [errors, setErrors] = useState(initialErrors);
   
   const handleChange = e => {
     if(e.target.type === "checkbox"){
@@ -33,16 +38,29 @@ const CombForm = ({comb, setComb, setIsEditing}) => {
       ...inputs,
       [e.target.name]: e.target.value
     });
+    if(e.target.name in errors){
+      setErrors({...errors,
+        [e.target.name]: ""
+      });
+    }
   };
   
   const createComb = e => {
     e.preventDefault();
+    if(!inputs.title){
+      return setErrors({...errors,
+        title: "Must include a title"
+      });
+    }
     axios.post(
       `${serverUrl}/api/combs/`,
       {comb: inputs},
       {withCredentials: true}
     )
       .then(({data}) => {
+        if(!data.success){
+          return setErrors(data.errors);
+        }
         navigate(`/combs/${data.comb.id}`);
       })
       .catch(e => console.error(e));
@@ -56,10 +74,11 @@ const CombForm = ({comb, setComb, setIsEditing}) => {
       {withCredentials: true}
     )
       .then(({data}) => {
-        if(data.success){
-          setComb(data.comb);
-          setIsEditing(false);
+        if(!data.success){
+          return setErrors(data.errors);
         }
+        setComb(data.comb);
+        setIsEditing(false);
       })
       .catch(e => console.error(e));
   };
@@ -88,6 +107,7 @@ const CombForm = ({comb, setComb, setIsEditing}) => {
         inputType = "text"
         value = {inputs.title}
         handleChange = {handleChange}
+        error = {errors.title}
       />
 
       {/* AUTHOR */}
@@ -116,6 +136,7 @@ const CombForm = ({comb, setComb, setIsEditing}) => {
         value = {inputs.language}
         handleChange = {handleChange}
         placeholder = "Default: en"
+        error = {errors.language}
       />
       
       {/* IMAGE URL */}
@@ -139,7 +160,7 @@ const CombForm = ({comb, setComb, setIsEditing}) => {
 
       {/* LINK */}
       <FormField
-        label = "Link (optional"
+        label = "Link (optional)"
         name = "link"
         inputType = "text"
         value = {inputs.link}

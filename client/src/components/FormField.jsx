@@ -37,12 +37,15 @@ const FormField = ({
             {label}
           </label>
           <textarea
-            className = "textarea"
+            className = {`textarea ${error ? "is-danger" : ""}`}
             name = {name}
             id = {name}
             onChange = {handleChange}
             value = {value}
           />
+          <p className = "help is-danger">
+            {error}
+          </p>
         </div>
       );
     
