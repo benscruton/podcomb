@@ -2,7 +2,7 @@ const {infoController} = require("../controllers");
 
 const infoRoutes = require("express").Router();
 
-infoRoutes.route("/host")
-  .get(infoController.getHost);
+infoRoutes.route("/")
+  .get(infoController.getInfo);
 
 module.exports = infoRoutes;

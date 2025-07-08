@@ -5,13 +5,13 @@ import AppContext from "../context/AppContext";
 import {FormField} from ".";
 
 const CombForm = ({comb, setComb, setIsEditing}) => {
-  const {serverUrl} = useContext(AppContext);
+  const {serverUrl, isoLanguageCodes} = useContext(AppContext);
   const navigate = useNavigate();
   
   const initialInputs = {
     title: comb?.title || "",
     description: comb?.description || "",
-    language: comb?.language || "",
+    language: comb?.language || "en",
     imageUrl: comb?.imageUrl || "",
     category: comb?.category || "",
     author: comb?.author || "",
@@ -26,6 +26,15 @@ const CombForm = ({comb, setComb, setIsEditing}) => {
 
   const [inputs, setInputs] = useState(initialInputs);
   const [errors, setErrors] = useState(initialErrors);
+
+  const languageOptions = isoLanguageCodes ?
+    Object.values(isoLanguageCodes)
+      .map(lang => ({
+        value: lang.code,
+        text: `${lang.code} – ${lang.name}`
+      }))
+    :
+    [{value: null, text: "Loading..."}]
   
   const handleChange = e => {
     if(e.target.type === "checkbox"){
@@ -132,11 +141,11 @@ const CombForm = ({comb, setComb, setIsEditing}) => {
       <FormField
         label = "Language"
         name = "language"
-        inputType = "text"
+        inputType = "select"
         value = {inputs.language}
         handleChange = {handleChange}
-        placeholder = "Default: en"
         error = {errors.language}
+        options = {languageOptions}
       />
       
       {/* IMAGE URL */}

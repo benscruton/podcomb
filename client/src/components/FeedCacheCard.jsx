@@ -2,6 +2,7 @@ import {useState, useContext} from "react";
 import axios from "axios";
 import dayjs from "dayjs"
 import AppContext from "../context/AppContext";
+import FormField from "./FormField";
 
 const FeedCacheCard = ({comb, setComb}) => {
   const {serverUrl} = useContext(AppContext);
@@ -136,27 +137,20 @@ const FeedCacheCard = ({comb, setComb}) => {
           <h3 className = "title is-5">
             Update Cache Frequency
           </h3>
-          <p>
-            Cache this comb every...
-          </p>
-          <p className = "my-2 select">
-            <select
+            <FormField
+              label = "Cache this comb every..."
+              name = "cacheInterval"
+              inputType = "select"
               value = {intervalInput}
-              onChange = {handleSelect}
-            >
-              {cacheIntervalOptions.map(option =>
-                <option
-                  key = {option.value}
-                  value = {option.value}
-                >
-                  {option.text}
-                </option>
-              )}
-            </select>
-          </p>
+              handleChange = {handleSelect}
+              error = ""
+              options = {cacheIntervalOptions}
+              classes = "my-3"
+            />
+          {/* </p> */}
           <p>
             <button
-              className = "button"
+              className = "button is-success is-light"
               type = "submit"
               disabled = {intervalInput == comb.cacheInterval}
             >

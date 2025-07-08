@@ -28,11 +28,14 @@ const App = () => {
   );
   const [logOutMessage, setLogOutMessage] = useState(null);
   const [hostUrl, setHostUrl] = useState(serverUrl);
+  const [isoLanguageCodes, setIsoLanguageCodes] = useState(null);
 
   useEffect(() => {
-    axios.get(`${serverUrl}/api/info/host`)
+    axios.get(`${serverUrl}/api/info/`)
       .then(({data}) => {
         setHostUrl(data.hostUrl);
+        setIsoLanguageCodes(data.isoLanguageCodes);
+        console.log(data.isoLanguageCodes);
       })
       .catch(e => {
         console.error(e);
@@ -59,6 +62,7 @@ const App = () => {
       <AppContext.Provider value={{
         serverUrl,
         hostUrl,
+        isoLanguageCodes,
         userData,
         setUserData,
         logOut,

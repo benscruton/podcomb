@@ -6,7 +6,8 @@ const FormField = ({
   handleChange,
   error = "",
   placeholder = "",
-  classes = ""
+  classes = "",
+  options = []
 }) => {
   switch(inputType){
     case "checkbox":
@@ -42,7 +43,40 @@ const FormField = ({
             id = {name}
             onChange = {handleChange}
             value = {value}
+            placeholder = {placeholder}
           />
+          <p className = "help is-danger">
+            {error}
+          </p>
+        </div>
+      );
+    
+    case "select":
+      return (
+        <div className = {classes}>
+          <label
+            className = "label"
+            htmlFor = {name}
+          >
+            {label}
+          </label>
+          <p className = {`select ${error ? "is-danger" : ""}`}>
+            <select
+              name = {name}
+              id = {name}
+              value = {value}
+              onChange = {handleChange}
+            >
+              {options.map(option =>
+                <option
+                  key = {option.value}
+                  value = {option.value}
+                >
+                  {option.text}
+                </option>
+              )}
+            </select>
+          </p>
           <p className = "help is-danger">
             {error}
           </p>
