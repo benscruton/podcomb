@@ -4,7 +4,7 @@ import dayjs from "dayjs"
 import AppContext from "../context/AppContext";
 import FormField from "./FormField";
 
-const FeedCacheCard = ({comb, setComb}) => {
+const FeedCacheCard = ({comb, setComb, isOwner}) => {
   const {serverUrl} = useContext(AppContext);
   const [isCaching, setIsCaching] = useState(false);
   const [displayInfo, setDisplayInfo] = useState(false);
@@ -126,38 +126,41 @@ const FeedCacheCard = ({comb, setComb}) => {
             className = "button mb-2"
             onClick = {toggleInfo}
           >
-            More info
+            What is this?
           </button>
         }
 
-        <form
-          className = "my-5"
-          onSubmit = {handleSubmitInterval}
-        >
-          <h3 className = "title is-5">
-            Update Cache Frequency
-          </h3>
-            <FormField
-              label = "Cache this comb every..."
-              name = "cacheInterval"
-              inputType = "select"
-              value = {intervalInput}
-              handleChange = {handleSelect}
-              error = ""
-              options = {cacheIntervalOptions}
-              classes = "my-3"
-            />
-          {/* </p> */}
-          <p>
-            <button
-              className = "button is-success is-light"
-              type = "submit"
-              disabled = {intervalInput == comb.cacheInterval}
-            >
-              Update cache interval
-            </button>
-          </p>
-        </form>
+        {isOwner ?
+          <form
+            className = "my-5"
+            onSubmit = {handleSubmitInterval}
+          >
+            <h3 className = "title is-5">
+              Update Cache Frequency
+            </h3>
+              <FormField
+                label = "Cache this comb every..."
+                name = "cacheInterval"
+                inputType = "select"
+                value = {intervalInput}
+                handleChange = {handleSelect}
+                error = ""
+                options = {cacheIntervalOptions}
+                classes = "my-3"
+              />
+            {/* </p> */}
+            <p>
+              <button
+                className = "button is-success is-light"
+                type = "submit"
+                disabled = {intervalInput == comb.cacheInterval}
+              >
+                Update cache interval
+              </button>
+            </p>
+          </form>
+          : <></>
+        }
 
         <p>
           {comb.cachedAt ?
@@ -167,23 +170,27 @@ const FeedCacheCard = ({comb, setComb}) => {
           }
         </p>
       </div>
-      <footer className = "card-footer">
-        <button
-          className = {`card-footer-item button ${isCaching ? "has-background-light has-text-dark" : "has-text-link"}`}
-          onClick = {cacheFeed}
-          disabled = {isCaching}
-        >
-          Cache now
-        </button>
-        
-        <button
-          className = "card-footer-item button has-text-danger"
-          onClick = {deleteCache}
-          disabled = {!comb.cachedAt}
-        >
-          Delete cache file
-        </button>
-      </footer>
+
+      {isOwner ?
+        <footer className = "card-footer">
+          <button
+            className = {`card-footer-item button ${isCaching ? "has-background-light has-text-dark" : "has-text-link"}`}
+            onClick = {cacheFeed}
+            disabled = {isCaching}
+          >
+            Cache now
+          </button>
+          
+          <button
+            className = "card-footer-item button has-text-danger"
+            onClick = {deleteCache}
+            disabled = {!comb.cachedAt}
+          >
+            Delete cache file
+          </button>
+        </footer>
+        : <></>
+      }
     </div>
   );
 };

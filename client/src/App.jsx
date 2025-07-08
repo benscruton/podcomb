@@ -35,7 +35,6 @@ const App = () => {
       .then(({data}) => {
         setHostUrl(data.hostUrl);
         setIsoLanguageCodes(data.isoLanguageCodes);
-        console.log(data.isoLanguageCodes);
       })
       .catch(e => {
         console.error(e);
@@ -85,7 +84,9 @@ const App = () => {
             } />
 
             <Route path = "/login" element = {
-              <Login />
+              <Login
+                clearLogOutMsg = {() => setLogOutMessage(null)}
+              />
             } />
 
             <Route path = "/combs" element = {

@@ -3,7 +3,7 @@ import {useParams} from "react-router";
 import axios from "axios";
 import AppContext from "../context/AppContext";
 
-const SourceFeedBox = ({sourceFeed, removeSourceFeed, combImageUrl, setComb}) => {
+const SourceFeedBox = ({sourceFeed, removeSourceFeed, combImageUrl, setComb, isOwner}) => {
   const {combId} = useParams();
   const {serverUrl} = useContext(AppContext);
   
@@ -45,27 +45,30 @@ const SourceFeedBox = ({sourceFeed, removeSourceFeed, combImageUrl, setComb}) =>
         </div>
       </div>
       
-      <p className = "has-text-centered">
-        <button
-          className = "button is-danger mx-2"
-          value = {sourceFeed.id}
-          onClick = {removeSourceFeed}
-        >
-          Remove feed
-        </button>
-      
-        {sourceFeed.imageUrl ?
+      {isOwner ?
+        <p className = "has-text-centered">
           <button
-            className = "button is-info mx-2"
-            value = {sourceFeed.imageUrl}
-            onClick = {updateCombImage}
-            disabled = {sourceFeed.imageUrl === combImageUrl}
+            className = "button is-danger mx-2"
+            value = {sourceFeed.id}
+            onClick = {removeSourceFeed}
           >
-            Use As Cover Image
+            Remove feed
           </button>
-          : <></>
-        }
-      </p>
+        
+          {sourceFeed.imageUrl ?
+            <button
+              className = "button is-info mx-2"
+              value = {sourceFeed.imageUrl}
+              onClick = {updateCombImage}
+              disabled = {sourceFeed.imageUrl === combImageUrl}
+            >
+              Use As Cover Image
+            </button>
+            : <></>
+          }
+        </p>
+        : <></>
+      }
     </div>
   );
 };

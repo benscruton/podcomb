@@ -6,7 +6,10 @@ const clientToken = (req, rsp, next) => {
     process.env.JWT_KEY,
     (err, payload) => {
       if(err){
-        return rsp.status(401).json({success: false, message: "Verification failed; please log in again"});
+        return rsp.status(401).json({
+          success: false,
+          message: "Verification failed; please log in again"
+        });
       }
       next();
     }

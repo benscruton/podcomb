@@ -1,13 +1,11 @@
-import {useContext} from "react";
 import {LogRegCard} from "../components";
-import AppContext from "../context/AppContext";
 
-const Login = () => {
-  const {serverUrl, userData} = useContext(AppContext);
-
+const Login = ({clearLogOutMsg}) => {
   return (
     <div className = "container">
-      <LogRegCard />
+      <LogRegCard
+        clearLogOutMsg = {clearLogOutMsg}
+      />
     </div>
   );
 };

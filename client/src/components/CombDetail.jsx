@@ -2,12 +2,13 @@ import {useContext, useState} from "react";
 import axios from "axios";
 import AppContext from "../context/AppContext";
 import {
+  BoxMessage,
   FeedCacheCard,
   SourceFeedBox,
   SourceFeedForm
 } from ".";
 
-const CombDetail = ({comb, isLoaded, setComb}) => {
+const CombDetail = ({comb, isLoaded, setComb, isOwner}) => {
   const {
     serverUrl,
     hostUrl,
@@ -15,6 +16,7 @@ const CombDetail = ({comb, isLoaded, setComb}) => {
   } = useContext(AppContext);
 
   const [copyNotification, setCopyNotification] = useState("");
+  const [isStaleMsgDismissed, setIsStaleMsgDismissed] = useState(false);
 
   const removeSourceFeed = e => {
     axios.delete(
@@ -47,18 +49,19 @@ const CombDetail = ({comb, isLoaded, setComb}) => {
               {comb.title}
             </h1>
 
-            {comb.cachedAt && !comb.cacheInterval ?
-              <div className = "message is-warning">
-                <header className = "message-header">
-                  Warning: Possible Stale Feed
-                </header>
+            <p className = "mb-3">
+              Created by <strong>{comb.user.username}</strong>
+            </p>
 
-                <div className = "message-body">
-                  This comb currently has a cache file, but does not have a cache interval set. This means the cache won't update unless you perform a manual update. With these settings, you may miss new episodes that are added to the feed.
-
-                  For best results, it is recommended either to set a cache interval or to delete your cache file.
-                </div>
-              </div>
+            {comb.cachedAt && !comb.cacheInterval && !isStaleMsgDismissed ?
+              <BoxMessage
+                message = {{
+                  color: "warning",
+                  title: "Warning: Possible Stale Feed",
+                  text: "This comb currently has a cache file, but does not have a cache interval set. This means the cache won't update unless you perform a manual update. With these settings, you may miss new episodes that are added to the feed. For best results, it is recommended either to set a cache interval or to delete your cache file."
+                }}
+                clear = {() => setIsStaleMsgDismissed(true)}
+              />
               : <></>
             }
 
@@ -97,7 +100,11 @@ const CombDetail = ({comb, isLoaded, setComb}) => {
               <span className = "has-text-weight-bold mr-3">
                 Language:
               </span>
-              {isoLanguageCodes[comb.language].name}
+              {isoLanguageCodes ?
+                isoLanguageCodes[comb.language].name
+                :
+                "Loading languages..."
+              }
             </p>
 
             <p>
@@ -113,7 +120,13 @@ const CombDetail = ({comb, isLoaded, setComb}) => {
                 <span className = "has-text-weight-bold mr-3">
                   Link:
                 </span>
-                {comb.link}
+                <a
+                  target = "_blank"
+                  rel = "noreferrer"
+                  href = {comb.link}
+                >
+                  {comb.link}
+                </a>
               </p>
               : <></>
             }
@@ -138,6 +151,7 @@ const CombDetail = ({comb, isLoaded, setComb}) => {
             <FeedCacheCard
               comb = {comb}
               setComb = {setComb}
+              isOwner = {isOwner}
             />
 
             <h2 className = "title is-3 mt-4 mb-1">
@@ -151,19 +165,24 @@ const CombDetail = ({comb, isLoaded, setComb}) => {
                 removeSourceFeed = {removeSourceFeed}
                 combImageUrl = {comb.imageUrl}
                 setComb = {setComb}
+                isOwner = {isOwner}
               />
             )}
-            <div className = "card">
-              <header className = "card-header has-background-light">
-                <p className = "card-header-title">
-                  Add New Source Feed
-                </p>
-              </header>
-              <SourceFeedForm
-                comb = {comb}
-                setComb = {setComb}
-              />
-            </div>
+
+            {isOwner ?
+              <div className = "card">
+                <header className = "card-header has-background-light">
+                  <p className = "card-header-title">
+                    Add New Source Feed
+                  </p>
+                </header>
+                <SourceFeedForm
+                  comb = {comb}
+                  setComb = {setComb}
+                />
+              </div>
+              : <></>
+            }
           </>
           :
           <p>Comb loading failed.</p>

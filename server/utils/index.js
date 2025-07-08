@@ -2,6 +2,7 @@ const buildXml = require("./buildXml");
 const cacheCombXml = require("./cacheCombXml");
 const combineShows = require("./combineShows");
 const combineShowsExample = require("./combineShowsExample");
+const createAuthCookie = require("./createAuthCookie");
 const deleteCombXmlCache = require("./deleteCombXmlCache");
 const escapeHtmlChars = require("./escapeHtmlChars");
 const getUserIdFromCookie = require("./getUserIdFromCookie");
@@ -15,6 +16,7 @@ module.exports = {
   cacheCombXml,
   combineShows,
   combineShowsExample,
+  createAuthCookie,
   deleteCombXmlCache,
   escapeHtmlChars,
   getUserIdFromCookie,

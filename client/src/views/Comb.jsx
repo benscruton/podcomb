@@ -9,11 +9,12 @@ import {
 import AppContext from "../context/AppContext";
 
 const Comb = () => {
-  const {serverUrl, logOut} = useContext(AppContext);
+  const {serverUrl, logOut, userData} = useContext(AppContext);
   const {combId} = useParams();
   const navigate = useNavigate();
   
   const [comb, setComb] = useState(null);
+  const [isOwner, setIsOwner] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -24,6 +25,7 @@ const Comb = () => {
     )
       .then(({data}) => {
         setComb(data.comb);
+        setIsOwner(userData.id === data.comb.userId);
       })
       .catch(e => {
         if(e.status === 401){
@@ -65,10 +67,11 @@ const Comb = () => {
           comb = {comb}
           isLoaded = {isLoaded}
           setComb = {setComb}
+          isOwner = {isOwner}
         />
       }
 
-      {comb && !isEditing ?
+      {comb && isOwner && !isEditing ?
         <CombActions
           setIsEditing = {setIsEditing}
           deleteComb = {deleteComb}

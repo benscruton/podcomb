@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const {
+  createAuthCookie,
   validators: {userValidator}
 } = require("../utils");
 const {User} = require("../models");
@@ -68,15 +69,9 @@ const login = (req, rsp) => {
           }
           // If successful login attempt:
           delete user.dataValues.password;
-          rsp
-            .cookie(
-              "userToken",
-              jwt.sign({id: user.id}, process.env.JWT_KEY),
-              {
-                httpOnly: true,
-                maxAge: 4 * oneHour
-              }
-            ).json({success: true, user});
+          createAuthCookie(
+            rsp, user.id
+          ).json({success: true, user});
         })
         .catch(e => {
           console.log(e);

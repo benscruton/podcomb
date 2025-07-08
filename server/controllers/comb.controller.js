@@ -4,6 +4,7 @@ const {
   buildXml,
   cacheCombXml,
   combineShows,
+  createAuthCookie,
   deleteCombXmlCache,
   getUserIdFromCookie,
   validators: {
@@ -52,6 +53,7 @@ const createComb = async (req, rsp) => {
     });
     await comb.setUser(user);
 
+    createAuthCookie(rsp, user.id);
     return rsp.json({success: true, comb});
   }
   catch(e){
@@ -62,15 +64,21 @@ const createComb = async (req, rsp) => {
 
 const getComb = (req, rsp) => {
   const {combId} = req.params;
+  const userId = getUserIdFromCookie(req.cookies.userToken);
 
   Comb.findByPk(
     combId,
-    {include: SourceFeed}
+    {include: [User, SourceFeed]}
   ).then(comb => {
     if(!comb){
       return rsp.status(404).json({success: false});
     }
-    rsp.json({
+    if(!comb.isPublic && comb.userId !== userId){
+      return rsp.status(403).json({success: false, error: "Not authorized"});
+    }
+    
+    createAuthCookie(rsp, userId);
+    return rsp.json({
       success: true,
       comb
     });
@@ -82,56 +90,73 @@ const getComb = (req, rsp) => {
 };
 
 const updateComb = async (req, rsp) => {
+  const {combId} = req.params;
+  const userId = getUserIdFromCookie(req.cookies.userToken);
   try{
-    const {combId} = req.params;
+    const comb = await Comb.findByPk(
+      combId,
+      {include: SourceFeed}
+    );
+    if(!comb){
+      return rsp.status(404).json({success: false});
+    }
+    if(userId !== comb.userId){
+      return rsp.status(403).json({success: false, error: "Not authorized"});
+    }
+
     const combData = req.body.comb;
     const {errors, hasErrors} = combUpdateValidator(combData);
     if(hasErrors){
       return rsp.json({success: false, errors});
     }
 
-    const [count] = await Comb.update(
-      combData,
-      {
-        where: {id: combId},
-        fields: [
-          "title",
-          "author",
-          "description",
-          "language",
-          "imageUrl",
-          "category",
-          "link",
-          "isExplicit",
-          "isPublic"
-        ]
+    const updatableFields = [
+      "title",
+      "author",
+      "description",
+      "language",
+      "imageUrl",
+      "category",
+      "link",
+      "isExplicit",
+      "isPublic"
+    ];
+    for(let field in combData){
+      if(!updatableFields.includes(field)){
+        delete combData[field];
       }
-    );
+    }
+    await comb.update(combData);
 
-    const comb = await Comb.findByPk(
-      combId,
-      {include: SourceFeed}
-    );
-    rsp.json({
+    createAuthCookie(rsp, userId);
+    return rsp.json({
       success: true,
-      updated: !!count,
       comb
     });
   }
   catch(e){
-    rsp.status(400).json({success: false, error: e.message});
+    return rsp.status(400).json({success: false, error: e.message});
   }
 };
 
 const deleteComb = async (req, rsp) => {
   const {combId} = req.params;
+  const userId = getUserIdFromCookie(req.cookies.userToken);
   try{
     const comb = await Comb.findByPk(combId);
+    if(!comb){
+      return rsp.status(404).json({success: false});
+    }
+    if(userId !== comb.userId){
+      return rsp.status(403).json({success: false, error: "Not authorized"});
+    }
+
     await comb.destroy();
-    rsp.json({success: true, combId});
+    createAuthCookie(rsp, userId);
+    return rsp.json({success: true, combId});
   }
   catch(e){
-    rsp.status(400).json({success: false, error: e.message});
+    return rsp.status(400).json({success: false, error: e.message});
   }
 };
 
@@ -140,7 +165,7 @@ const getUserCombs = async (req, rsp) => {
   const combs = await Comb.findAll({
     where: {userId}
   });
-  rsp.json({
+  return rsp.json({
     success: true,
     combs
   });
@@ -148,24 +173,30 @@ const getUserCombs = async (req, rsp) => {
 
 const addSourceFeed = async (req, rsp) => {
   const {combId} = req.params;
+  const userId = getUserIdFromCookie(req.cookies.userToken);
 
   try{
-    const sourceFeedData = req.body.sourceFeed;
+    const comb = await Comb.findByPk(combId);
+    if(!comb){
+      return rsp.status(404).json({success: false});
+    }
+    if(userId !== comb.userId){
+      return rsp.status(403).json({success: false, error: "Not authorized"});
+    }
 
+    const sourceFeedData = req.body.sourceFeed;
     const {errors, hasErrors} = sourceFeedValidator(sourceFeedData);
     if(hasErrors){
       return rsp.json({success: false, errors});
     }
 
-    const comb = await Comb.findByPk(combId);
-
     const sourceFeed = await SourceFeed.create({
       title: sourceFeedData.title,
-      url: sourceFeedData.url,
-      imageUrl: sourceFeedData.imageUrl
+      url: sourceFeedData.url
     });
     await sourceFeed.setComb(comb);
 
+    createAuthCookie(rsp, userId);
     return rsp.json({success: true, sourceFeed});
   }
   catch(e){
@@ -175,11 +206,21 @@ const addSourceFeed = async (req, rsp) => {
 };
 
 deleteSourceFeed = async (req, rsp) => {
-  const {sourceFeedId} = req.params;
+  const {combId, sourceFeedId} = req.params;
+  const userId = getUserIdFromCookie(req.cookies.userToken);
   try{
+    const comb = await Comb.findByPk(combId);
+    if(!comb){
+      return rsp.status(404).json({success: false});
+    }
+    if(userId !== comb.userId){
+      return rsp.status(403).json({success: false, error: "Not authorized"});
+    }
+
     const sourceFeed = await SourceFeed.findByPk(sourceFeedId);
     await sourceFeed.destroy();
-    rsp.json({success: true, sourceFeedId});
+    createAuthCookie(rsp, userId);
+    return rsp.json({success: true, sourceFeedId});
   }
   catch(e){
     rsp.status(400).json({success: false, error: e.message});
@@ -219,8 +260,7 @@ const sendCombXml = async (req, rsp) => {
     }
     else{
       // If comb has cachedAt timestamp but no file
-      comb.cachedAt = null;
-      comb.save();
+      comb.update({cachedAt: null});
     }
   }
 
@@ -238,19 +278,22 @@ const sendCombXml = async (req, rsp) => {
 
 const cacheFeed = async (req, rsp) => {
   const {combId} = req.params;
+  const userId = getUserIdFromCookie(req.cookies.userToken);
+
   const comb = await Comb.findByPk(
     combId,
     {include: SourceFeed}
   );
-  
   if(!comb){
     return rsp.status(404).json({success: false, error: "Comb not found"})
   }
-
-  const {cacheNow, cacheInterval} = req.body;
+  if(userId !== comb.userId){
+    return rsp.status(403).json({success: false, error: "Not authorized"});
+  }
 
   let response = {};
-  
+  const {cacheNow, cacheInterval} = req.body;
+
   if(cacheNow){
     const cacheResult = await cacheCombXml(comb);
     if(cacheResult.success === false){
@@ -269,20 +312,27 @@ const cacheFeed = async (req, rsp) => {
     response = {...response, ...jobResult};
   }
 
-  rsp.json(response);
+  createAuthCookie(rsp, userId);
+  return rsp.json(response);
 };
 
 const deleteCache = async (req, rsp) => {
   const {combId} = req.params;
+  const userId = getUserIdFromCookie(req.cookies.userToken);
   const comb = await Comb.findByPk(combId);
   if(!comb){
     return rsp.status(404).json({success: false, error: "Comb not found"})
   }
+  if(userId !== comb.userId){
+    return rsp.status(403).json({success: false, error: "Not authorized"});
+  }
+
   const result = deleteCombXmlCache(comb);
   if(result.error){
-    rsp.status(400);
+    rsp.status(400).json({success: false});
   }
-  rsp.json(result);
+  createAuthCookie(rsp, userId);
+  return rsp.json(result);
 };
 
 module.exports = {

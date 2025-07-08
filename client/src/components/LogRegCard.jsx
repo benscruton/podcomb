@@ -1,6 +1,6 @@
 import {LoginForm} from ".";
 
-const LogRegCard = () => {
+const LogRegCard = ({clearLogOutMsg}) => {
   return (
     <div className = "card">
       <div className = "card-header has-background-info-light">
@@ -10,7 +10,9 @@ const LogRegCard = () => {
       </div>
 
       <div className = "card-content">
-        <LoginForm />
+        <LoginForm
+          clearLogOutMsg = {clearLogOutMsg}
+        />
       </div>
     </div>
   );

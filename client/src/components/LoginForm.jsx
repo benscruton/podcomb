@@ -4,7 +4,7 @@ import axios from "axios";
 import AppContext from "../context/AppContext";
 import {FormField} from ".";
 
-const LoginForm = () => {
+const LoginForm = ({clearLogOutMsg}) => {
   const {serverUrl, setUserData} = useContext(AppContext);
   const navigate = useNavigate();
 
@@ -27,6 +27,7 @@ const LoginForm = () => {
   
   const handleSubmit = e => {
     e.preventDefault();
+    clearLogOutMsg();
     if(!inputs.username || !inputs.password){
       return setErrors({...errors,
         username: inputs.username ? "" : "Must include username or email",
