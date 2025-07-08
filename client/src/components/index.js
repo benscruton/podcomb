@@ -2,6 +2,7 @@ import BoxMessage from "./BoxMessage";
 import CombActions from "./CombActions";
 import CombDetail from "./CombDetail";
 import CombForm from "./CombForm";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import EditCombCard from "./EditCombCard";
 import FeedCacheCard from "./FeedCacheCard";
 import FormField from "./FormField";
@@ -17,6 +18,7 @@ export {
   CombActions,
   CombDetail,
   CombForm,
+  ConfirmDeleteModal,
   EditCombCard,
   FeedCacheCard,
   FormField,

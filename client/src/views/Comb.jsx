@@ -4,7 +4,8 @@ import axios from "axios";
 import {
   EditCombCard,
   CombDetail,
-  CombActions
+  CombActions,
+  ConfirmDeleteModal
 } from "../components";
 import AppContext from "../context/AppContext";
 
@@ -17,6 +18,7 @@ const Comb = () => {
   const [isOwner, setIsOwner] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     axios.get(
@@ -74,7 +76,16 @@ const Comb = () => {
       {comb && isOwner && !isEditing ?
         <CombActions
           setIsEditing = {setIsEditing}
+          showDeleteModal = {() => setIsDeleting(true)}
+        />
+        : <></>
+      }
+
+      {comb && isDeleting ?
+        <ConfirmDeleteModal
+          comb = {comb}
           deleteComb = {deleteComb}
+          cancelDeletion = {() => setIsDeleting(false)}
         />
         : <></>
       }

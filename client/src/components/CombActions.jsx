@@ -1,4 +1,4 @@
-const CombActions = ({setIsEditing, deleteComb}) => {
+const CombActions = ({setIsEditing, showDeleteModal}) => {
   return (
     <p className = "mb-2 has-text-centered">
       <button
@@ -10,7 +10,7 @@ const CombActions = ({setIsEditing, deleteComb}) => {
 
       <button
         className = "button has-background-danger mx-2"
-        onClick = {deleteComb}
+        onClick = {showDeleteModal}
       >
         Delete This Comb
       </button>

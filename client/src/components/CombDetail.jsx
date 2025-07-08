@@ -76,9 +76,10 @@ const CombDetail = ({comb, isLoaded, setComb, isOwner}) => {
               {copyNotification}
             </p>
 
+            
             <img
               style = {{maxWidth: "200px"}}
-              src = {comb.imageUrl}
+              src = {comb.imageUrl || null}
               alt = "Podcast cover image"
             />
             
