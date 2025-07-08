@@ -10,7 +10,8 @@ import {
 const CombDetail = ({comb, isLoaded, setComb}) => {
   const {
     serverUrl,
-    hostUrl
+    hostUrl,
+    isoLanguageCodes
   } = useContext(AppContext);
 
   const [copyNotification, setCopyNotification] = useState("");
@@ -96,7 +97,7 @@ const CombDetail = ({comb, isLoaded, setComb}) => {
               <span className = "has-text-weight-bold mr-3">
                 Language:
               </span>
-              {comb.language}
+              {isoLanguageCodes[comb.language].name}
             </p>
 
             <p>
