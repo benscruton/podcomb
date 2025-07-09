@@ -1,5 +1,7 @@
+const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
+const xml2js = require("xml2js");
 const {
   buildXml,
   cacheCombXml,
@@ -95,7 +97,7 @@ const updateComb = async (req, rsp) => {
   try{
     const comb = await Comb.findByPk(
       combId,
-      {include: SourceFeed}
+      {include: [User, SourceFeed]}
     );
     if(!comb){
       return rsp.status(404).json({success: false});
@@ -209,21 +211,85 @@ deleteSourceFeed = async (req, rsp) => {
   const {combId, sourceFeedId} = req.params;
   const userId = getUserIdFromCookie(req.cookies.userToken);
   try{
-    const comb = await Comb.findByPk(combId);
-    if(!comb){
+    const sourceFeed = await SourceFeed.findByPk(
+      sourceFeedId,
+      {include: Comb}
+    );
+    if(!sourceFeed?.comb){
       return rsp.status(404).json({success: false});
     }
-    if(userId !== comb.userId){
+    if(
+      combId !== sourceFeed.comb.id ||
+      userId !== sourceFeed.comb.userId
+    ){
       return rsp.status(403).json({success: false, error: "Not authorized"});
     }
 
-    const sourceFeed = await SourceFeed.findByPk(sourceFeedId);
     await sourceFeed.destroy();
     createAuthCookie(rsp, userId);
     return rsp.json({success: true, sourceFeedId});
   }
   catch(e){
     rsp.status(400).json({success: false, error: e.message});
+  }
+};
+
+const updateSourceFeed = async (req, rsp) => {
+  const {combId, sourceFeedId} = req.params;
+  const userId = getUserIdFromCookie(req.cookies.userToken);
+  const {refreshImage, sourceFeed: sfData} = req.body;
+  try{
+    const sourceFeed = await SourceFeed.findByPk(
+      sourceFeedId,
+      {include: Comb}
+    );
+    if(!sourceFeed?.comb){
+      return rsp.status(404).json({success: false});
+    }
+    if(
+      combId !== sourceFeed.comb.id ||
+      userId !== sourceFeed.comb.userId
+    ){
+      return rsp.status(403).json({success: false, error: "Not authorized"});
+    }
+    
+    if(sfData){
+      const updatableFields = [
+        "title",
+        "url",
+        "imageUrl"
+      ];
+      for(let field in sfData){
+        if(!updatableFields.includes(field)){
+          delete sfData[field];
+        }
+      }
+      await sourceFeed.update(sfData);
+    }
+    
+    if(refreshImage){
+      axios.get(sourceFeed.url)
+        .then(({data}) => {
+          xml2js.parseString(data, async (e, result) => {
+            if(e){
+              throw e;
+            }
+            const imageUrl = result.rss.channel[0].image[0].url[0];
+            await sourceFeed.update({imageUrl});
+
+            createAuthCookie(rsp, userId);
+            return rsp.json({success: true, sourceFeed});
+          })
+        })
+        .catch(e => rsp.json({success: false, error: e.message}));
+    }
+    else{
+      createAuthCookie(rsp, userId);
+      return rsp.json({success: true, sourceFeed});
+    }
+  }
+  catch(e){
+    return rsp.json({success: false, error: e.message});
   }
 };
 
@@ -343,6 +409,7 @@ module.exports = {
   getUserCombs,
   addSourceFeed,
   deleteSourceFeed,
+  updateSourceFeed,
   sendCombXml,
   cacheFeed,
   deleteCache

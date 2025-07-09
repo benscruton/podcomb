@@ -159,12 +159,13 @@ const CombDetail = ({comb, isLoaded, setComb, isOwner}) => {
               Source Feeds
             </h2>
 
-            {comb.sourceFeeds.map(sourceFeed =>
+            {comb.sourceFeeds.map((sourceFeed, idx) =>
               <SourceFeedBox
                 key = {sourceFeed.id}
                 sourceFeed = {sourceFeed}
+                idx = {idx}
                 removeSourceFeed = {removeSourceFeed}
-                combImageUrl = {comb.imageUrl}
+                comb = {comb}
                 setComb = {setComb}
                 isOwner = {isOwner}
               />

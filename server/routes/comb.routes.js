@@ -18,6 +18,7 @@ combRoutes.route("/:combId/sourcefeeds")
   .post(authentication.clientToken,combController.addSourceFeed);
 
 combRoutes.route("/:combId/sourcefeeds/:sourceFeedId")
+  .put(authentication.clientToken, combController.updateSourceFeed)
   .delete(authentication.clientToken, combController.deleteSourceFeed);
 
 combRoutes.route("/:combId/cache")

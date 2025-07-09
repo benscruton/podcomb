@@ -1,11 +1,13 @@
-import {useContext} from "react";
+import {useState, useContext} from "react";
 import {useParams} from "react-router";
 import axios from "axios";
 import AppContext from "../context/AppContext";
 
-const SourceFeedBox = ({sourceFeed, removeSourceFeed, combImageUrl, setComb, isOwner}) => {
+const SourceFeedBox = ({sourceFeed, idx, removeSourceFeed, comb, setComb, isOwner}) => {
   const {combId} = useParams();
   const {serverUrl} = useContext(AppContext);
+
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
   const updateCombImage = () => {
     axios.put(
@@ -20,11 +22,31 @@ const SourceFeedBox = ({sourceFeed, removeSourceFeed, combImageUrl, setComb, isO
       })
       .catch(e => console.error(e));
   };
+
+  const refreshImage = e => {
+    e.preventDefault();
+    setIsRefreshing(true);
+    axios.put(
+      `${serverUrl}/api/combs/${combId}/sourcefeeds/${e.target.value}`,
+      {refreshImage: true},
+      {withCredentials: true}
+    )
+      .then(({data}) => {
+        setComb({...comb,
+          sourceFeeds: [
+            ...comb.sourceFeeds.slice(0, idx),
+            data.sourceFeed,
+            ...comb.sourceFeeds.slice(idx + 1)
+          ]
+        });
+      })
+      .catch(e => console.error(e))
+      .finally(() => setIsRefreshing(false));
+  };
   
   return (
     <div
       className = "box has-background-light"
-      key = {sourceFeed.id}
     >
       <div className = "media">
         <div className = "media-left">
@@ -54,13 +76,22 @@ const SourceFeedBox = ({sourceFeed, removeSourceFeed, combImageUrl, setComb, isO
           >
             Remove feed
           </button>
+
+          <button
+            className = "button mx-2"
+            value = {sourceFeed.id}
+            onClick = {refreshImage}
+            disabled = {isRefreshing}
+          >
+            Refresh image
+          </button>
         
           {sourceFeed.imageUrl ?
             <button
-              className = "button is-info mx-2"
+              className = "button mx-2"
               value = {sourceFeed.imageUrl}
               onClick = {updateCombImage}
-              disabled = {sourceFeed.imageUrl === combImageUrl}
+              disabled = {sourceFeed.imageUrl === comb.imageUrl}
             >
               Use As Cover Image
             </button>

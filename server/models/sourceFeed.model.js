@@ -37,7 +37,7 @@ const SourceFeed = sequelize.define(
               sourceFeed.imageUrl = result.rss.channel[0].image[0].url[0];
             });
           })
-          .catch(e => console.log(e));
+          .catch(e => console.log(e.message));
       }
     }
   }
