@@ -22,6 +22,22 @@ const combValidator = comb => {
   return {errors, hasErrors};
 };
 
+const combUpdateValidator = comb => {
+  const errors = {};
+  let hasErrors = false;
+
+  if("language" in comb && !(comb.language in isoLanguageCodes)){
+    hasErrors = true;
+    errors.language = "Language code not valid";
+  }
+  if("title" in comb && !comb.title){
+    hasErrors = true;
+    errors.title = "Title cannot be empty";
+  }
+
+  return {errors, hasErrors};
+};
+
 const sourceFeedValidator = sourceFeed => {
   const errors = {};
   let hasErrors = false;
@@ -77,6 +93,7 @@ const userValidator = user => {
 
 module.exports = {
   combValidator,
+  combUpdateValidator,
   sourceFeedValidator,
   userValidator
 };

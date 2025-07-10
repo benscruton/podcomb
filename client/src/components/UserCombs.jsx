@@ -61,7 +61,7 @@ const UserCombs = () => {
                   </p>
 
                   <img
-                    src = {comb.imageUrl}
+                    src = {comb.imageUrl || null}
                     alt = "Main podcast image"
                   />
 
