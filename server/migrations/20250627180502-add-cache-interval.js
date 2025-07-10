@@ -14,6 +14,7 @@ module.exports = {
       }
     );
 
+    // Add cachedAt column
     await queryInterface.addColumn(
       "combs",
       "cached_at",
@@ -24,6 +25,7 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
+    // Drop newly added columns
     await queryInterface.removeColumn(
       "combs",
       "cache_interval"

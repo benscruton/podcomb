@@ -38,7 +38,6 @@ const CombForm = ({comb, setComb, setIsEditing}) => {
   languageOptions.unshift({code: "eeeee", text: "Dolphin"});
 
   const frontEndValidator = () => {
-    return {}
     let hasErrors = false;
     const inputErrors = {};
 
