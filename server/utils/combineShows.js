@@ -36,15 +36,27 @@ const combineShows = comb => {
           };
           const episodes = [];
 
-          for(let feedData of feedDataArray){
+          feedDataArray.forEach((feedData, idx) => {
+            const sourceFeed = comb.sourceFeeds[idx];
+
             // Add feed metadata
             xmlMetadata = {
               ...xmlMetadata,
               ...feedData.rss["$"]
             };
+
+            // Override episode images, if applicable
+            if(sourceFeed.overrideEpisodeImage && sourceFeed.imageUrl){
+              feedData.rss.channel[0].item.forEach(e => {
+                e["itunes:image"] = [{
+                  "$": {href: sourceFeed.overrideImageUrl || sourceFeed.imageUrl}
+                }]
+              });
+            }
+
             // Add episodes
             episodes.push(...feedData.rss.channel[0].item);
-          }
+          });
 
           // Sort all episodes by date
           episodes.forEach(e =>

@@ -25,6 +25,15 @@ const SourceFeed = sequelize.define(
 
     imageUrl: {
       type: DataTypes.TEXT
+    },
+
+    overrideEpisodeImage: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+
+    overrideImageUrl: {
+      type: DataTypes.TEXT
     }
   },
   {

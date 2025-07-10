@@ -2,6 +2,7 @@ import {useState, useContext} from "react";
 import {useParams} from "react-router";
 import axios from "axios";
 import AppContext from "../context/AppContext";
+import FormField from "./FormField";
 
 const SourceFeedBox = ({sourceFeed, idx, removeSourceFeed, comb, setComb, isOwner}) => {
   const {combId} = useParams();
@@ -23,15 +24,21 @@ const SourceFeedBox = ({sourceFeed, idx, removeSourceFeed, comb, setComb, isOwne
       .catch(e => console.error(e));
   };
 
-  const refreshImage = e => {
+  const updateSourceFeed = (e, data) => {
     e.preventDefault();
-    setIsRefreshing(true);
+    console.log(e.target.value, data);
+
+    if(data.refreshImage){
+      setIsRefreshing(true);
+    }
+
     axios.put(
-      `${serverUrl}/api/combs/${combId}/sourcefeeds/${e.target.value}`,
-      {refreshImage: true},
+      `${serverUrl}/api/combs/${combId}/sourcefeeds/${sourceFeed.id}`,
+      data,
       {withCredentials: true}
     )
       .then(({data}) => {
+        console.log(data);
         setComb({...comb,
           sourceFeeds: [
             ...comb.sourceFeeds.slice(0, idx),
@@ -66,6 +73,19 @@ const SourceFeedBox = ({sourceFeed, idx, removeSourceFeed, comb, setComb, isOwne
           </p>
         </div>
       </div>
+
+      {/* OVERRIDE EPISODE IMAGE */}
+      <FormField
+        label = "Override episode image"
+        name = "overrideEpisodeImage"
+        inputType = "checkbox"
+        value = {sourceFeed.overrideEpisodeImage}
+        handleChange = {e => updateSourceFeed(
+          e, {sourceFeed: {overrideEpisodeImage: e.target.checked}}
+        )}
+        classes = "has-text-centered mb-2"
+      />
+      
       
       {isOwner ?
         <p className = "has-text-centered">
@@ -80,7 +100,9 @@ const SourceFeedBox = ({sourceFeed, idx, removeSourceFeed, comb, setComb, isOwne
           <button
             className = "button mx-2"
             value = {sourceFeed.id}
-            onClick = {refreshImage}
+            onClick = {e => updateSourceFeed(
+              e, {refreshImage: true}
+            )}
             disabled = {isRefreshing}
           >
             Refresh image

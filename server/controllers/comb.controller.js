@@ -257,7 +257,9 @@ const updateSourceFeed = async (req, rsp) => {
       const updatableFields = [
         "title",
         "url",
-        "imageUrl"
+        "imageUrl",
+        "overrideEpisodeImage",
+        "overrideImageUrl"
       ];
       for(let field in sfData){
         if(!updatableFields.includes(field)){
