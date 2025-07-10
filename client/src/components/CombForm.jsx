@@ -35,6 +35,23 @@ const CombForm = ({comb, setComb, setIsEditing}) => {
       }))
     :
     [{value: null, text: "Loading..."}]
+  languageOptions.unshift({code: "eeeee", text: "Dolphin"});
+
+  const frontEndValidator = () => {
+    return {}
+    let hasErrors = false;
+    const inputErrors = {};
+
+    if(!inputs.title){
+      hasErrors = true;
+      inputErrors.title = "Must include a title";
+    }
+    if(!(inputs.language in isoLanguageCodes)){
+      hasErrors = true;
+      inputErrors.language = "Language code not valid";
+    }
+    return {inputErrors, hasErrors};
+  };
   
   const handleChange = e => {
     if(e.target.type === "checkbox"){
@@ -56,10 +73,9 @@ const CombForm = ({comb, setComb, setIsEditing}) => {
   
   const createComb = e => {
     e.preventDefault();
-    if(!inputs.title){
-      return setErrors({...errors,
-        title: "Must include a title"
-      });
+    const {inputErrors, hasErrors} = frontEndValidator();
+    if(hasErrors){
+      return setErrors(inputErrors);
     }
     axios.post(
       `${serverUrl}/api/combs/`,
@@ -77,6 +93,10 @@ const CombForm = ({comb, setComb, setIsEditing}) => {
 
   const updateComb = e => {
     e.preventDefault();
+    const {inputErrors, hasErrors} = frontEndValidator();
+    if(hasErrors){
+      return setErrors(inputErrors);
+    }
     axios.put(
       `${serverUrl}/api/combs/${comb.id}`,
       {comb: inputs},
@@ -102,7 +122,7 @@ const CombForm = ({comb, setComb, setIsEditing}) => {
         <p className = "mb-4 has-text-centered">
           <img
             style = {{maxWidth: "200px"}}
-            src = {comb.imageUrl}
+            src = {comb.imageUrl || null}
             alt = "Podcast cover image"
           />
         </p>

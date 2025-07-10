@@ -11,7 +11,6 @@ const {
   getUserIdFromCookie,
   validators: {
     combValidator,
-    combUpdateValidator,
     sourceFeedValidator
   },
   startXmlCacheCronJob,
@@ -107,7 +106,7 @@ const updateComb = async (req, rsp) => {
     }
 
     const combData = req.body.comb;
-    const {errors, hasErrors} = combUpdateValidator(combData);
+    const {errors, hasErrors} = combValidator(combData);
     if(hasErrors){
       return rsp.json({success: false, errors});
     }

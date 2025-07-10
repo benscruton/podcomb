@@ -1,3 +1,5 @@
+const isoLanguageCodes = require("./isoLanguageCodes.json");
+
 const combValidator = comb => {
   const errors = {};
   let hasErrors = false;
@@ -11,24 +13,12 @@ const combValidator = comb => {
       hasErrors = true;
       errors.title = "Must include a title";
     }
+    if(!(comb.language in isoLanguageCodes)){
+      hasErrors = true;
+      errors.language = "Language code not valid";
+    }
   }
   
-  return {errors, hasErrors};
-};
-
-const combUpdateValidator = comb => {
-  const errors = {};
-  let hasErrors = false;
-
-  if("language" in comb && !comb.language){
-    hasErrors = true;
-    errors.language = "Language cannot be empty";
-  }
-  if("title" in comb && !comb.title){
-    hasErrors = true;
-    errors.title = "Title cannot be empty";
-  }
-
   return {errors, hasErrors};
 };
 
@@ -87,7 +77,6 @@ const userValidator = user => {
 
 module.exports = {
   combValidator,
-  combUpdateValidator,
   sourceFeedValidator,
   userValidator
 };
