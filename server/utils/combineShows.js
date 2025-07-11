@@ -46,7 +46,7 @@ const combineShows = comb => {
             };
 
             // Override episode images, if applicable
-            if(sourceFeed.overrideEpisodeImage && sourceFeed.imageUrl){
+            if(sourceFeed.overrideEpisodeImage && (sourceFeed.overrideImageUrl || sourceFeed.imageUrl)){
               feedData.rss.channel[0].item.forEach(e => {
                 e["itunes:image"] = [{
                   "$": {href: sourceFeed.overrideImageUrl || sourceFeed.imageUrl}

@@ -9,6 +9,10 @@ const SourceFeedBox = ({sourceFeed, idx, removeSourceFeed, comb, setComb, isOwne
   const {serverUrl} = useContext(AppContext);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [inputs, setInputs] = useState({
+    overrideImageUrl: sourceFeed.overrideImageUrl || ""
+  });
+  const [showSettings, setShowSettings] = useState(false);
   
   const updateCombImage = () => {
     axios.put(
@@ -26,7 +30,6 @@ const SourceFeedBox = ({sourceFeed, idx, removeSourceFeed, comb, setComb, isOwne
 
   const updateSourceFeed = (e, data) => {
     e.preventDefault();
-    console.log(e.target.value, data);
 
     if(data.refreshImage){
       setIsRefreshing(true);
@@ -38,7 +41,6 @@ const SourceFeedBox = ({sourceFeed, idx, removeSourceFeed, comb, setComb, isOwne
       {withCredentials: true}
     )
       .then(({data}) => {
-        console.log(data);
         setComb({...comb,
           sourceFeeds: [
             ...comb.sourceFeeds.slice(0, idx),
@@ -50,6 +52,12 @@ const SourceFeedBox = ({sourceFeed, idx, removeSourceFeed, comb, setComb, isOwne
       .catch(e => console.error(e))
       .finally(() => setIsRefreshing(false));
   };
+
+  const handleChange = e => {
+    setInputs({...inputs,
+      [e.target.name]: e.target.value
+    });
+  }
   
   return (
     <div
@@ -74,52 +82,107 @@ const SourceFeedBox = ({sourceFeed, idx, removeSourceFeed, comb, setComb, isOwne
         </div>
       </div>
 
-      {/* OVERRIDE EPISODE IMAGE */}
-      <FormField
-        label = "Override episode image"
-        name = "overrideEpisodeImage"
-        inputType = "checkbox"
-        value = {sourceFeed.overrideEpisodeImage}
-        handleChange = {e => updateSourceFeed(
-          e, {sourceFeed: {overrideEpisodeImage: e.target.checked}}
-        )}
-        classes = "has-text-centered mb-2"
-      />
-      
-      
       {isOwner ?
-        <p className = "has-text-centered">
-          <button
-            className = "button is-danger mx-2"
-            value = {sourceFeed.id}
-            onClick = {removeSourceFeed}
-          >
-            Remove feed
-          </button>
+        <p
+          className = "has-text-link has-text-right"
+          onClick = {() => setShowSettings(!showSettings)}
+        >
+          {showSettings ? "Hide settings" : "Settings"}
+        </p>
+        : <></>
+      }
 
-          <button
-            className = "button mx-2"
-            value = {sourceFeed.id}
-            onClick = {e => updateSourceFeed(
-              e, {refreshImage: true}
+      {/* ACTIONS (available to comb owner only) */}
+      {showSettings ?
+        <>
+          {/* OVERRIDE EPISODE IMAGE */}
+          <FormField
+            label = {"Override episode image" + (sourceFeed.overrideEpisodeImage ? " (enter URL below)" : "")}
+            name = "overrideEpisodeImage"
+            inputType = "checkbox"
+            value = {sourceFeed.overrideEpisodeImage}
+            handleChange = {e => updateSourceFeed(
+              e, {sourceFeed: {overrideEpisodeImage: e.target.checked}}
             )}
-            disabled = {isRefreshing}
-          >
-            Refresh image
-          </button>
-        
-          {sourceFeed.imageUrl ?
-            <button
-              className = "button mx-2"
-              value = {sourceFeed.imageUrl}
-              onClick = {updateCombImage}
-              disabled = {sourceFeed.imageUrl === comb.imageUrl}
+            classes = "has-text-centered"
+          />
+
+          {sourceFeed.overrideEpisodeImage ?
+            <form
+              className = "columns is-vcentered"
+              onSubmit = {e => updateSourceFeed(
+                e, {sourceFeed: {
+                  overrideImageUrl: inputs.overrideImageUrl || null
+                }}
+              )}
             >
-              Use As Cover Image
-            </button>
+              {/* OVERRIDE IMAGE PREVIEW */}
+              <div className = "column is-2">
+                {sourceFeed.overrideImageUrl ?
+                  <figure className = "image is-96x96">
+                    <img
+                      src = {sourceFeed.overrideImageUrl}
+                      alt = {`${sourceFeed.title} episode override image`}
+                    />
+                  </figure>
+                  : <></>
+                }
+              </div>
+
+              <FormField
+                name = "overrideImageUrl"
+                inputType = "text"
+                value = {inputs.overrideImageUrl}
+                handleChange = {handleChange}
+                placeholder = "Defaults to source feed image"
+                classes = "column is-8 mt-0 mb-1 mb-0-mobile"
+              />
+              <div className = "column is-2 has-text-centered-mobile mt-0-mobile">
+                <button
+                  type = "submit"
+                  className = "button is-success"
+                  disabled = {inputs.overrideImageUrl === sourceFeed.overrideImageUrl || (!inputs.overrideImageUrl && !sourceFeed.overrideImageUrl)}
+                >
+                  Update
+                </button>
+              </div>
+            </form>
             : <></>
           }
-        </p>
+        
+          <p className = "has-text-centered mt-3">
+            <button
+              className = "button is-danger mx-2 mb-1"
+              value = {sourceFeed.id}
+              onClick = {removeSourceFeed}
+            >
+              Remove feed
+            </button>
+
+            <button
+              className = "button mx-2 mb-1"
+              value = {sourceFeed.id}
+              onClick = {e => updateSourceFeed(
+                e, {refreshImage: true}
+              )}
+              disabled = {isRefreshing}
+            >
+              Refresh image
+            </button>
+          
+            {sourceFeed.imageUrl ?
+              <button
+                className = "button mx-2 mb-1"
+                value = {sourceFeed.imageUrl}
+                onClick = {updateCombImage}
+                disabled = {sourceFeed.imageUrl === comb.imageUrl}
+              >
+                Use As Comb Image
+              </button>
+              : <></>
+            }
+          </p>
+        </>
         : <></>
       }
     </div>

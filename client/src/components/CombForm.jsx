@@ -27,16 +27,16 @@ const CombForm = ({comb, setComb, setIsEditing}) => {
   const [inputs, setInputs] = useState(initialInputs);
   const [errors, setErrors] = useState(initialErrors);
 
-  const languageOptions = isoLanguageCodes ?
+  const languageOptions = (isoLanguageCodes ?
     Object.values(isoLanguageCodes)
       .map(lang => ({
         value: lang.code,
         text: `${lang.code} – ${lang.name}`
       }))
     :
-    [{value: null, text: "Loading..."}]
-  languageOptions.unshift({code: "eeeee", text: "Dolphin"});
-
+    [{value: "loading", text: "Loading..."}]
+  );
+  
   const frontEndValidator = () => {
     let hasErrors = false;
     const inputErrors = {};
