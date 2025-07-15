@@ -18,6 +18,7 @@ const {
 } = require("../utils");
 const {
   Comb,
+  Filter,
   SourceFeed,
   User
 } = require("../models");
@@ -70,7 +71,7 @@ const getComb = (req, rsp) => {
 
   Comb.findByPk(
     combId,
-    {include: [User, SourceFeed]}
+    {include: [User, SourceFeed, Filter]}
   ).then(comb => {
     if(!comb){
       return rsp.status(404).json({success: false});
@@ -97,7 +98,7 @@ const updateComb = async (req, rsp) => {
   try{
     const comb = await Comb.findByPk(
       combId,
-      {include: [User, SourceFeed]}
+      {include: [User, SourceFeed, Filter]}
     );
     if(!comb){
       return rsp.status(404).json({success: false});
@@ -207,7 +208,7 @@ const addSourceFeed = async (req, rsp) => {
   }
 };
 
-deleteSourceFeed = async (req, rsp) => {
+const deleteSourceFeed = async (req, rsp) => {
   const {combId, sourceFeedId} = req.params;
   const userId = getUserIdFromCookie(req.cookies.userToken);
   try{
@@ -295,11 +296,67 @@ const updateSourceFeed = async (req, rsp) => {
   }
 };
 
+const addFilter = async (req, rsp) => {
+  const {combId} = req.params;
+  const userId = getUserIdFromCookie(req.cookies.userToken);
+
+  try{
+    const comb = await Comb.findByPk(combId);
+    if(!comb){
+      return rsp.status(404).json({success: false});
+    }
+    if(userId !== comb.userId){
+      return rsp.status(403).json({success: false, error: "Not authorized"});
+    }
+
+    const filterData = req.body.filter;
+    const filter = await Filter.create({
+      name: filterData.name,
+      type: filterData.type,
+      data: filterData.data
+    });
+    await filter.setComb(comb);
+
+    createAuthCookie(rsp, userId);
+    return rsp.json({success: true, filter});
+  }
+  catch(e){
+    return rsp.json({success: false, error: e.message});
+  }
+};
+
+const deleteFilter = async (req, rsp) => {
+  const {combId, filterId} = req.params;
+  const userId = getUserIdFromCookie(req.cookies.userToken);
+  try{
+    const filter = await Filter.findByPk(
+      filterId,
+      {include: Comb}
+    );
+    if(!filter?.comb){
+      return rsp.status(404).json({success: false});
+    }
+    if(
+      combId !== filter.comb.id ||
+      userId !== filter.comb.userId
+    ){
+      return rsp.status(403).json({success: false, error: "Not authorized"});
+    }
+
+    await filter.destroy();
+    createAuthCookie(rsp, userId);
+    return rsp.json({success: true, filterId});
+  }
+  catch(e){
+    rsp.status(400).json({success: false, error: e.message});
+  }
+};
+
 const sendCombXml = async (req, rsp) => {
   const {combId} = req.params;
   const comb = await Comb.findByPk(
     combId,
-    {include: SourceFeed}
+    {include: [SourceFeed, Filter]}
   );
 
   if(!comb){
@@ -350,7 +407,7 @@ const cacheFeed = async (req, rsp) => {
 
   const comb = await Comb.findByPk(
     combId,
-    {include: SourceFeed}
+    {include: [SourceFeed, Filter]}
   );
   if(!comb){
     return rsp.status(404).json({success: false, error: "Comb not found"})
@@ -412,6 +469,8 @@ module.exports = {
   addSourceFeed,
   deleteSourceFeed,
   updateSourceFeed,
+  addFilter,
+  deleteFilter,
   sendCombXml,
   cacheFeed,
   deleteCache

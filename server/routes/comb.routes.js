@@ -15,11 +15,17 @@ combRoutes.route("/:combId")
   .delete(authentication.clientToken, combController.deleteComb);
 
 combRoutes.route("/:combId/sourcefeeds")
-  .post(authentication.clientToken,combController.addSourceFeed);
+  .post(authentication.clientToken, combController.addSourceFeed);
 
 combRoutes.route("/:combId/sourcefeeds/:sourceFeedId")
   .put(authentication.clientToken, combController.updateSourceFeed)
   .delete(authentication.clientToken, combController.deleteSourceFeed);
+
+combRoutes.route("/:combId/filters")
+  .post(authentication.clientToken, combController.addFilter);
+
+combRoutes.route("/:combId/filters/:filterId")
+  .delete(authentication.clientToken, combController.deleteFilter);
 
 combRoutes.route("/:combId/cache")
   .put(authentication.clientToken, combController.cacheFeed)

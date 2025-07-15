@@ -2,6 +2,19 @@ const {DataTypes} = require("sequelize");
 const {sequelize} = require("../config");
 const User = require("./user.model");
 
+const parseFilterJson = comb => {
+  const isPostgres = (
+    process.env.NODE_ENV === "production" || 
+    process.env.NODE_ENV === "postgres"
+  );
+
+  if(!isPostgres && comb.filters?.length){
+    comb.filters.forEach(filter =>
+      filter.data = JSON.parse(filter.data)
+    );
+  }
+}
+
 const Comb = sequelize.define(
   "comb",
   {
@@ -59,7 +72,13 @@ const Comb = sequelize.define(
       type: DataTypes.DATE
     }
   },
-  {tableName: "combs"}
+  {
+    tableName: "combs",
+    hooks: {
+      afterFind: parseFilterJson,
+      afterUpdate: parseFilterJson
+    }
+  }
 );
 
 User.hasMany(Comb, {

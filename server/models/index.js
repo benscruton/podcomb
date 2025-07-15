@@ -1,4 +1,5 @@
 const Comb = require("./comb.model");
+const Filter = require("./filter.model");
 const SourceFeed = require("./sourceFeed.model");
 const User = require("./user.model");
 
@@ -9,6 +10,7 @@ const User = require("./user.model");
 
 module.exports = {
   Comb,
+  Filter,
   SourceFeed,
   User
 };
