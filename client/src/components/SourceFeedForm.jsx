@@ -1,8 +1,9 @@
 import {useContext, useState} from "react";
 import axios from "axios";
 import AppContext from "../context/AppContext";
+import FormField from "./FormField";
 
-const SourceFeedForm = ({comb, setComb}) => {
+const SourceFeedForm = ({comb, setComb, classes}) => {
   const {serverUrl} = useContext(AppContext);
 
   const emptyInputs = {
@@ -45,53 +46,30 @@ const SourceFeedForm = ({comb, setComb}) => {
   };
 
   return (
-    <>
-      <form
-        className = "card-content"
-        onSubmit = {handleSubmit}
-      >
-        {/* TITLE */}
-        <div className = "field">
-          <label
-            className = "label"
-            htmlFor = "title"
-          >
-            Title
-          </label>
-          <div className = "control">
-            <input
-              className = "input"
-              type = "text"
-              name = "title"
-              id = "title"
-              onChange = {handleChange}
-              value = {inputs.title}
-            />
-          </div>
-        </div>
+    <form
+      className = {classes}
+      onSubmit = {handleSubmit}
+    >
+      {/* TITLE */}
+      <FormField
+        label = "Title"
+        name = "title"
+        inputType = "text"
+        value = {inputs.title}
+        handleChange = {handleChange}
+      />
 
-        {/* TITLE */}
-        <div className = "field">
-          <label
-            className = "label"
-            htmlFor = "url"
-          >
-            Source Feed URL
-          </label>
-          <div className = "control">
-            <input
-              className = "input"
-              type = "text"
-              name = "url"
-              id = "url"
-              onChange = {handleChange}
-              value = {inputs.url}
-            />
-          </div>
-        </div>
+      {/* URL */}
+      <FormField
+        label = "Source Feed URL"
+        name = "url"
+        inputType = "text"
+        value = {inputs.url}
+        handleChange = {handleChange}
+      />
 
-        {/* SUBMIT BUTTON */}
-        <div className = "has-text-centered">
+      {/* SUBMIT BUTTON */}
+      <div className = "has-text-centered">
         <button
           className = "button is-success"
           type = "submit"
@@ -100,8 +78,7 @@ const SourceFeedForm = ({comb, setComb}) => {
           Add
         </button>
       </div>
-      </form>
-    </>
+    </form>
   );
 };
 
