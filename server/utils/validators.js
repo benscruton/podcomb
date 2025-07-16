@@ -1,5 +1,9 @@
 const isoLanguageCodes = require("./isoLanguageCodes.json");
 
+const filterTypes = [
+  "blacklist"
+];
+
 const combValidator = comb => {
   const errors = {};
   let hasErrors = false;
@@ -33,6 +37,44 @@ const combUpdateValidator = comb => {
   if("title" in comb && !comb.title){
     hasErrors = true;
     errors.title = "Title cannot be empty";
+  }
+
+  return {errors, hasErrors};
+};
+
+const filterValidator = filter => {
+  const errors = {};
+  let hasErrors = false;
+
+  if(!filter){
+    hasErrors = true;
+    errors.filter = "No sourceFeed object included with request.";
+  }
+  else{
+    if(!filter.name){
+      hasErrors = true;
+      errors.name = "Filter must have a name";
+    }
+    if(!filterTypes.includes(filter.type)){
+      hasErrors = true;
+      errors.type = "Invalid filter type";
+    }
+  }
+
+  return {errors, hasErrors};
+};
+
+const filterUpdateValidator = filter => {
+  const errors = {};
+  let hasErrors = false;
+
+  if("name" in filter && !filter.name){
+    hasErrors = true;
+    errors.name = "Filter must have a name";
+  }
+  if("type" in filter && !filterTypes.includes(filter.type)){
+    hasErrors = true;
+    errors.type = "Invalid filter type";
   }
 
   return {errors, hasErrors};
@@ -94,6 +136,8 @@ const userValidator = user => {
 module.exports = {
   combValidator,
   combUpdateValidator,
+  filterValidator,
+  filterUpdateValidator,
   sourceFeedValidator,
   userValidator
 };

@@ -7,6 +7,12 @@ const isPostgres = (
   process.env.NODE_ENV === "postgres"
 );
 
+const parseFilterJson = filter => {
+  if(!isPostgres){
+    filter.data = JSON.parse(filter.data);
+  } 
+};
+
 const Filter = sequelize.define(
   "filter",
   {
@@ -45,21 +51,9 @@ const Filter = sequelize.define(
       },
 
       // If SQLite, parse stringified JSON
-      afterCreate: filter => {
-        if(!isPostgres){
-          filter.data = JSON.parse(filter.data);
-        } 
-      },
-      afterUpdate: filter => {
-        if(!isPostgres){
-          filter.data = JSON.parse(filter.data);
-        }
-      },
-      afterFind: filter => {
-        if(!isPostgres){
-          filter.data = JSON.parse(filter.data);
-        }
-      }
+      afterCreate: parseFilterJson,
+      afterUpdate: parseFilterJson,
+      afterFind: parseFilterJson
     }
   }
 );

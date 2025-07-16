@@ -4,6 +4,8 @@ import AppContext from "../context/AppContext";
 import {
   BoxMessage,
   FeedCacheCard,
+  FilterBox,
+  FilterForm,
   SourceFeedBox,
   SourceFeedForm
 } from ".";
@@ -15,8 +17,16 @@ const CombDetail = ({comb, isLoaded, setComb, isOwner}) => {
     isoLanguageCodes
   } = useContext(AppContext);
 
+  const emptyFilterInputs = {
+    name: "",
+    type: "",
+    data: {}
+  };
+
   const [copyNotification, setCopyNotification] = useState("");
   const [isStaleMsgDismissed, setIsStaleMsgDismissed] = useState(false);
+  const [filterInputs, setFilterInputs] = useState(emptyFilterInputs);
+  const [filterErrors, setFilterErrors] = useState(emptyFilterInputs);
 
   const removeSourceFeed = e => {
     axios.delete(
@@ -39,7 +49,76 @@ const CombDetail = ({comb, isLoaded, setComb, isOwner}) => {
     setCopyNotification("Copied!");
     setTimeout(() => setCopyNotification(""), 2000)
   };
+
+  const handleChangeFilter = e => {
+    setFilterInputs({...filterInputs,
+      [e.target.name]: e.target.value
+    });
+    setFilterErrors({...filterErrors,
+      [e.target.name]: ""
+    });
+  };
+
+  const frontEndFilterValidator = () => {
+    const errors = {};
+    let hasErrors = false;
+    if(!filterInputs.name){
+      hasErrors = true;
+      errors.name = "Filter must have a name";
+    }
+    if(!filterInputs.type){
+      hasErrors = true;
+      errors.type = "Must select a type";
+    }
+    return {errors, hasErrors};
+  };
+
+  const addFilter = e => {
+    e.preventDefault();
+    const {errors, hasErrors} = frontEndFilterValidator();
+    if(hasErrors){
+      return setFilterErrors({
+        ...filterErrors,
+        ...errors
+      });
+    }
+    axios.post(
+      `${serverUrl}/api/combs/${comb.id}/filters`,
+      {filter: filterInputs},
+      {withCredentials: true}
+    )
+      .then(({data}) => {
+        if(!data.success){
+          return setFilterErrors({
+            ...filterErrors,
+            ...data.errors
+          });
+        }
+        setComb({...comb,
+          filters: [
+            ...comb.filters,
+            data.filter
+          ]
+        });
+      })
+      .catch(e => console.error(e));
+  };
   
+  const removeFilter = e => {
+    axios.delete(
+      `${serverUrl}/api/combs/${comb.id}/filters/${e.target.value}`,
+      {withCredentials: true}
+    )
+      .then(({data}) => {
+        if(data.success){
+          setComb({...comb,
+            filters: comb.filters.filter(f => f.id !== data.filterId)
+          })
+        }
+      })
+      .catch(e => console.error(e));
+  };
+
   return (
     <>
       {isLoaded ?
@@ -146,6 +225,7 @@ const CombDetail = ({comb, isLoaded, setComb, isOwner}) => {
               {comb.isPublic ? "Yes" : "No"}
             </p>
 
+
             <h2 className = "title is-3 mt-4 mb-1">
               Feed Caching
             </h2>
@@ -154,6 +234,7 @@ const CombDetail = ({comb, isLoaded, setComb, isOwner}) => {
               setComb = {setComb}
               isOwner = {isOwner}
             />
+
 
             <h2 className = "title is-3 mt-4 mb-1">
               Source Feeds
@@ -181,10 +262,42 @@ const CombDetail = ({comb, isLoaded, setComb, isOwner}) => {
                 <SourceFeedForm
                   comb = {comb}
                   setComb = {setComb}
+                  classes = "card-content"
                 />
               </div>
               : <></>
             }
+
+
+            <h2 className = "title is-3 mt-4 mb-1">
+              Filters
+            </h2>
+            {comb.filters.map(filter =>
+              <FilterBox
+                key = {filter.id}
+                filter = {filter}
+                isOwner = {isOwner}
+                removeFilter = {removeFilter}
+              />
+            )}
+            {isOwner ?
+              <div className = "card">
+                <header className = "card-header has-background-light">
+                  <p className = "card-header-title">
+                    Add New Filter
+                  </p>
+                </header>
+                <FilterForm
+                  filter = {filterInputs}
+                  errors = {filterErrors}
+                  handleChange = {handleChangeFilter}
+                  handleSubmit = {addFilter}
+                  classes = "card-content"
+                />
+              </div>
+              : <></>
+            }
+
           </>
           :
           <p>Comb loading failed.</p>

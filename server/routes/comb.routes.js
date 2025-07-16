@@ -25,6 +25,7 @@ combRoutes.route("/:combId/filters")
   .post(authentication.clientToken, combController.addFilter);
 
 combRoutes.route("/:combId/filters/:filterId")
+  .put(authentication.clientToken, combController.updateFilter)
   .delete(authentication.clientToken, combController.deleteFilter);
 
 combRoutes.route("/:combId/cache")

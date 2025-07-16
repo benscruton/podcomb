@@ -12,6 +12,8 @@ const {
   validators: {
     combValidator,
     combUpdateValidator,
+    filterValidator,
+    filterUpdateValidator,
     sourceFeedValidator
   },
   startXmlCacheCronJob,
@@ -310,6 +312,11 @@ const addFilter = async (req, rsp) => {
     }
 
     const filterData = req.body.filter;
+    const {errors, hasErrors} = filterValidator(filterData);
+    if(hasErrors){
+      return rsp.json({success: false, errors});
+    }
+
     const filter = await Filter.create({
       name: filterData.name,
       type: filterData.type,
@@ -349,6 +356,49 @@ const deleteFilter = async (req, rsp) => {
   }
   catch(e){
     rsp.status(400).json({success: false, error: e.message});
+  }
+};
+
+const updateFilter = async (req, rsp) => {
+  const {combId, filterId} = req.params;
+  const userId = getUserIdFromCookie(req.cookies.userToken);
+  const filterData = req.body.filter;
+  try{
+    const filter = await Filter.findByPk(
+      filterId,
+      {include: Comb}
+    );
+    if(!filter?.comb || !filterData){
+      return rsp.status(404).json({success: false});
+    }
+    if(
+      combId !== filter.comb.id ||
+      userId !== filter.comb.userId
+    ){
+      return rsp.status(403).json({success: false, error: "Not authorized"});
+    }
+
+    const updatableFields = [
+      "name",
+      "type",
+      "data"
+    ]
+    for(let field in filterData){
+      if(!updatableFields.includes(field)){
+        delete filterData[field];
+      }
+    }
+    const {errors, hasErrors} = filterUpdateValidator(filterData);
+    if(hasErrors){
+      return rsp.json({success: false, errors});
+    }
+
+    await filter.update(filterData);
+    createAuthCookie(rsp, userId);
+    return rsp.json({success: true, filter});
+  }
+  catch(e){
+    return rsp.json({success: false, error: e.message});
   }
 };
 
@@ -466,11 +516,15 @@ module.exports = {
   updateComb,
   deleteComb,
   getUserCombs,
+
   addSourceFeed,
   deleteSourceFeed,
   updateSourceFeed,
+
   addFilter,
   deleteFilter,
+  updateFilter,
+
   sendCombXml,
   cacheFeed,
   deleteCache
