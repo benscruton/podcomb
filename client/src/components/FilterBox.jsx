@@ -4,6 +4,9 @@ const FilterBox = ({filter, isOwner, removeFilter}) => {
       <p>
         {filter.name}
       </p>
+      <p>
+        A {filter.type} filter
+      </p>
 
       <p className = "has-text-centered">
         <button

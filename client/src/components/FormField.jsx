@@ -7,7 +7,8 @@ const FormField = ({
   error = "",
   placeholder = "",
   classes = "",
-  options = []
+  options = [],
+  disabled = false
 }) => {
   switch(inputType){
     case "checkbox":
@@ -20,6 +21,7 @@ const FormField = ({
               id = {name}
               onChange = {handleChange}
               checked = {value}
+              disabled = {disabled}
             />
             <strong className = "pl-2">
               {label}
@@ -44,6 +46,7 @@ const FormField = ({
             onChange = {handleChange}
             value = {value}
             placeholder = {placeholder}
+            disabled = {disabled}
           />
           <p className = "help is-danger">
             {error}
@@ -66,11 +69,13 @@ const FormField = ({
               id = {name}
               value = {value}
               onChange = {handleChange}
+              disabled = {disabled}
             >
               {options.map(option =>
                 <option
                   key = {option.value}
                   value = {option.value}
+                  disabled = {option.value === ""}
                 >
                   {option.text}
                 </option>
@@ -80,6 +85,33 @@ const FormField = ({
           <p className = "help is-danger">
             {error}
           </p>
+        </div>
+      );
+    
+    case "radio":
+      return (
+        <div className = {classes}>
+          <p className = "label">
+            {label}
+          </p>
+          <div className = "radios">
+            {options.map(option =>
+              <label
+                key = {option.value}
+                className = "radio mr-2"
+              >
+                <input
+                  type = "radio"
+                  name = {name}
+                  value = {option.value}
+                  onChange = {handleChange}
+                  defaultChecked = {value === option.value}
+                  className = "mr-2"
+                />
+                {option.text}
+              </label>
+            )}
+          </div>
         </div>
       );
     
@@ -102,6 +134,7 @@ const FormField = ({
               value = {value}
               onChange = {handleChange}
               placeholder = {placeholder}
+              disabled = {disabled}
             />
           </div>
           <p className = "help is-danger">

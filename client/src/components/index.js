@@ -6,6 +6,7 @@ import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import EditCombCard from "./EditCombCard";
 import FeedCacheCard from "./FeedCacheCard";
 import FilterBox from "./FilterBox";
+import FilterDataByType from "./FilterDataByType";
 import FilterForm from "./FilterForm";
 import FormField from "./FormField";
 import LoginForm from "./LoginForm";
@@ -24,6 +25,7 @@ export {
   EditCombCard,
   FeedCacheCard,
   FilterBox,
+  FilterDataByType,
   FilterForm,
   FormField,
   LoginForm,

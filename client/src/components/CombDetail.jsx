@@ -100,6 +100,7 @@ const CombDetail = ({comb, isLoaded, setComb, isOwner}) => {
             data.filter
           ]
         });
+        setFilterInputs(emptyFilterInputs);
       })
       .catch(e => console.error(e));
   };
@@ -288,12 +289,19 @@ const CombDetail = ({comb, isLoaded, setComb, isOwner}) => {
                   </p>
                 </header>
                 <FilterForm
+                  comb = {comb}
                   filter = {filterInputs}
+                  setFilter = {setFilterInputs}
                   errors = {filterErrors}
+                  setErrors = {setFilterErrors}
                   handleChange = {handleChangeFilter}
                   handleSubmit = {addFilter}
                   classes = "card-content"
                 />
+
+                <button onClick = {() => console.log(filterInputs)} className = "button">
+                  Log
+                </button>
               </div>
               : <></>
             }

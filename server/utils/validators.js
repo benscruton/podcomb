@@ -61,6 +61,42 @@ const filterValidator = filter => {
     }
   }
 
+  if(filter.type === "blacklist"){
+    if(!filter.data.subtype){
+      hasErrors = true;
+      errors.blacklistType = "Blacklist filter must have a subtype";
+    }
+    if(filter.data.subtype === "Text"){
+      if(!filter.data.exactText){
+        hasErrors = true;
+        errors.exactText = "Text to match cannot be blank."
+      }
+      if(!["title", "description"].includes(filter.data.episodeField)){
+        hasErrors = true;
+        errors.episodeField = "Invalid field";
+      }
+    }
+    else if(filter.data.subtype === "Date"){
+      if(!filter.data.date){
+        hasErrors = true;
+        errors.date = "Must include a date";
+      }
+      else{
+        const dateFormatRegex = /[0-9]{4}-[0-9]{2}-[0-9]{2}/g;
+        const isInvalidFormat =  !dateFormatRegex.test(filter.data.date);
+        const isInvalidDate = isNaN(new Date(filter.data.date));
+        if(isInvalidFormat || isInvalidDate){
+          hasErrors = true;
+          errors.date = "Invalid date. Please use the format YYYY-MM-DD";
+        }
+      }
+      if(!["before", "after"].includes(filter.data.timeframe)){
+        hasErrors = true;
+        errors.timeframe = 'Timeframe must be "before" or "after"';
+      }
+    }
+  }
+
   return {errors, hasErrors};
 };
 
