@@ -1,5 +1,7 @@
 const axios = require("axios");
 const xml2js = require("xml2js");
+
+const applyFilter = require("./applyFilter");
 const escapeHtmlChars = require("./escapeHtmlChars");
 
 const combineShows = comb => {
@@ -38,6 +40,7 @@ const combineShows = comb => {
 
           feedDataArray.forEach((feedData, idx) => {
             const sourceFeed = comb.sourceFeeds[idx];
+            let sfEpisodes = feedData.rss.channel[0].item;
 
             // Add feed metadata
             xmlMetadata = {
@@ -45,25 +48,51 @@ const combineShows = comb => {
               ...feedData.rss["$"]
             };
 
-            // Override episode images, if applicable
-            if(sourceFeed.overrideEpisodeImage && (sourceFeed.overrideImageUrl || sourceFeed.imageUrl)){
-              feedData.rss.channel[0].item.forEach(e => {
+            sfEpisodes.forEach(e => {
+              // Add relevant categorization data
+              e.podcomb = {
+                sourceFeedId: sourceFeed.id,
+                date: new Date(e.pubDate[0]).getTime(),
+              };
+
+              // Add filter array, if applicable
+              if(comb.filters.length){
+                e.podcomb.filters = [{
+                  filterId: "none",
+                  priotity: 32767,
+                  includeEpisode: true
+                }];
+              }
+              
+              // Override episode image, if applicable
+              if(sourceFeed.overrideEpisodeImage && (sourceFeed.overrideImageUrl || sourceFeed.imageUrl)){
                 e["itunes:image"] = [{
                   "$": {href: sourceFeed.overrideImageUrl || sourceFeed.imageUrl}
                 }]
-              });
+              }
+            });
+
+            // Apply filters, if necessary
+            comb.filters.forEach(filter => {
+              if(filter.data.applyToComb || filter.data.sourceFeedIds.includes(sourceFeed.id)){
+                applyFilter(sfEpisodes, filter);
+              }
+            });
+
+            if(comb.filters.length){
+              sfEpisodes = sfEpisodes.filter(e =>
+                e.podcomb.filters[0].includeEpisode
+              );
             }
 
             // Add episodes
-            episodes.push(...feedData.rss.channel[0].item);
+            episodes.push(...sfEpisodes);
           });
 
+
           // Sort all episodes by date
-          episodes.forEach(e =>
-            e.dateInt = new Date(e.pubDate[0]).getTime()
-          );
-          episodes.sort((a, b) => b.dateInt - a.dateInt);
-          episodes.forEach(e => delete e.dateInt);
+          episodes.sort((a, b) => b.podcomb.date - a.podcomb.date);
+          episodes.forEach(e => delete e.podcomb);
 
           return {
             xmlMetadata,

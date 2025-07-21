@@ -7,7 +7,7 @@ const filterTypeOptions = [
 ]
 
 const FilterForm = ({comb, filter, setFilter, errors, setErrors, handleChange, handleSubmit, classes}) => {
- return (
+  return (
     <form
       className = {classes}
       onSubmit = {handleSubmit}

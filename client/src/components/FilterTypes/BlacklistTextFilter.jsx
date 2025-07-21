@@ -47,7 +47,7 @@ const BlacklistTextFilter = ({BlacklistSubtype, ApplyFilterTo, filter, handleCha
           />
 
           <FormField
-            label = "Case-sensitive match?"
+            label = "Only filter case-sensitive matches?"
             name = "isCaseSensitive"
             inputType = "checkbox"
             value = {filter.data.isCaseSensitive}

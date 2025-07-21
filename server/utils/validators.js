@@ -59,6 +59,10 @@ const filterValidator = filter => {
       hasErrors = true;
       errors.type = "Invalid filter type";
     }
+    if(filter.priority < 1 || filter.priority > 32767){
+      hasErrors = true;
+      errors.priority = "Priority must be an integer between 1 and 32767";
+    }
   }
 
   if(filter.type === "blacklist"){
@@ -82,7 +86,7 @@ const filterValidator = filter => {
         errors.date = "Must include a date";
       }
       else{
-        const dateFormatRegex = /[0-9]{4}-[0-9]{2}-[0-9]{2}/g;
+        const dateFormatRegex = /[0-9]{4}-[0-9]{2}-[0-9]{2}/;
         const isInvalidFormat =  !dateFormatRegex.test(filter.data.date);
         const isInvalidDate = isNaN(new Date(filter.data.date));
         if(isInvalidFormat || isInvalidDate){

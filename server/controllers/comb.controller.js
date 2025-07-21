@@ -320,6 +320,7 @@ const addFilter = async (req, rsp) => {
     const filter = await Filter.create({
       name: filterData.name,
       type: filterData.type,
+      priority: filterData.priority || 100,
       data: filterData.data
     });
     await filter.setComb(comb);
@@ -439,6 +440,7 @@ const sendCombXml = async (req, rsp) => {
     }
   }
 
+  // Combine shows, if no cache file available
   combineShows(comb)
     .then(combinedData => {
       const xml = buildXml(combinedData);

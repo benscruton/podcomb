@@ -10,7 +10,9 @@ const FilterDataByType = ({comb, filter, setFilter, errors, setErrors}) => {
 
   const data = {
     blacklist: {
-      subtype: ""
+      subtype: "",
+      applyToComb: filter?.data?.applyToComb || false,
+      sourceFeedIds: filter?.data?.sourceFeedIds || [],
     },
     blacklistText: {
       subtype: "Text",
@@ -114,7 +116,10 @@ const FilterDataByType = ({comb, filter, setFilter, errors, setErrors}) => {
   switch(filter.type + (filter?.data?.subtype || "")){
     case "blacklist":
       return (
-        <BlacklistSubtype />
+        <div className = "columns">
+          <BlacklistSubtype classes = "column is-half" />
+          <ApplyFilterTo classes = "column is-half" />
+        </div>
       );
 
     case "blacklistText":

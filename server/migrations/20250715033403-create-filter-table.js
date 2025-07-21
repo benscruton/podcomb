@@ -30,6 +30,10 @@ module.exports = {
           type: DataTypes.TEXT,
           allowNull: false
         },
+        priority: {
+          type: DataTypes.SMALLINT,
+          defaultValue: 100
+        },
         data: {
           type: (isPostgres ?
             DataTypes.JSONB

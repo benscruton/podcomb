@@ -20,7 +20,10 @@ const CombDetail = ({comb, isLoaded, setComb, isOwner}) => {
   const emptyFilterInputs = {
     name: "",
     type: "",
-    data: {}
+    data: {
+      applyToComb: false,
+      sourceFeedIds: []
+    }
   };
 
   const [copyNotification, setCopyNotification] = useState("");

@@ -1,3 +1,4 @@
+const applyFilter = require("./applyFilter");
 const buildXml = require("./buildXml");
 const cacheCombXml = require("./cacheCombXml");
 const combineShows = require("./combineShows");
@@ -12,6 +13,7 @@ const startXmlCacheCronJob = require("./startXmlCacheCronJob")
 const validators = require("./validators");
 
 module.exports = {
+  applyFilter,
   buildXml,
   cacheCombXml,
   combineShows,

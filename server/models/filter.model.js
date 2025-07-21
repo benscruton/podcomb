@@ -32,6 +32,11 @@ const Filter = sequelize.define(
       allowNull: false
     },
 
+    priority: {
+      type: DataTypes.SMALLINT,
+      defaultValue: 100
+    },
+
     data: {
       type: (isPostgres ?
         DataTypes.JSONB
