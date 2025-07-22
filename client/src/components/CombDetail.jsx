@@ -279,6 +279,7 @@ const CombDetail = ({comb, isLoaded, setComb, isOwner}) => {
             {comb.filters.map(filter =>
               <FilterBox
                 key = {filter.id}
+                comb = {comb}
                 filter = {filter}
                 isOwner = {isOwner}
                 removeFilter = {removeFilter}
