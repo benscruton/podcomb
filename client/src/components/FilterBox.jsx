@@ -1,39 +1,5 @@
 import dayjs from "dayjs";
 
-const SourceFeeds = ({comb, filter}) => {
-  return (
-    <ul className = "columns is-multiline">
-      {comb.sourceFeeds
-        .filter(sf =>
-          filter.data.applyToComb ||
-          filter.data.sourceFeedIds.includes(sf.id)
-        ).map(sf =>
-          <li
-            key = {sf.id}
-            className = "mr-3"
-          >
-            <div className = "box">
-              <div className = "media">
-                <div className = "media-left">
-                  <figure className = "image is-64x64">
-                    <img
-                      src = {sf.imageUrl}
-                      alt = {sf.title + " main image"}
-                    />
-                  </figure>
-                </div>
-                <div className = "media-content">
-                  {sf.title}
-                </div>
-              </div>
-            </div>
-          </li>
-        )
-      }
-    </ul>
-  );
-};
-
 const FilterInfo = ({comb, filter}) => {
   if(filter.type === "blacklist"){
     const Intro = () => (
@@ -41,7 +7,36 @@ const FilterInfo = ({comb, filter}) => {
         <p className = "mb-5">
           Filtering out episodes from
         </p>
-        <SourceFeeds comb = {comb} filter = {filter} />
+
+        <ul className = "columns is-multiline">
+          {comb.sourceFeeds
+            .filter(sf =>
+              filter.data.applyToComb ||
+              filter.data.sourceFeedIds.includes(sf.id)
+            ).map(sf =>
+              <li
+                key = {sf.id}
+                className = "mr-3"
+              >
+                <div className = "box">
+                  <div className = "media">
+                    <div className = "media-left">
+                      <figure className = "image is-64x64">
+                        <img
+                          src = {sf.imageUrl}
+                          alt = {sf.title + " main image"}
+                        />
+                      </figure>
+                    </div>
+                    <div className = "media-content">
+                      {sf.title}
+                    </div>
+                  </div>
+                </div>
+              </li>
+            )
+          }
+        </ul>
       </>
     );
 
