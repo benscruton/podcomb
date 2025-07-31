@@ -34,6 +34,11 @@ const SourceFeed = sequelize.define(
 
     overrideImageUrl: {
       type: DataTypes.TEXT
+    },
+    
+    filteredMediaReplacement: {
+      type: DataTypes.TEXT,
+      defaultValue: "image"
     }
   },
   {

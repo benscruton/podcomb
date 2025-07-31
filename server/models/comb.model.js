@@ -70,6 +70,11 @@ const Comb = sequelize.define(
 
     cachedAt: {
       type: DataTypes.DATE
+    },
+
+    replaceFilteredEpisodeMedia: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     }
   },
   {

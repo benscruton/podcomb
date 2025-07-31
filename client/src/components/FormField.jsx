@@ -7,6 +7,7 @@ const FormField = ({
   error = "",
   placeholder = "",
   classes = "",
+  subclasses = "",
   options = [],
   disabled = false
 }) => {
@@ -28,6 +29,23 @@ const FormField = ({
             </strong>
           </label>
         </div>
+      );
+
+    case "switch":
+      return (
+        <p className = {`field ${classes}`}>
+          <input
+            type = "checkbox"
+            name = {name}
+            id = {name}
+            className = {`switch ${subclasses}`}
+            checked = {value}
+            onChange = {handleChange}
+          />
+          <label htmlFor = {name}>
+            {label}
+          </label>
+        </p>
       );
     
     case "textarea":

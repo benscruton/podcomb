@@ -8,6 +8,7 @@ import FeedCacheCard from "./FeedCacheCard";
 import FilterBox from "./FilterBox";
 import FilterDataByType from "./FilterDataByType";
 import FilterForm from "./FilterForm";
+import FilterInfo from "./FilterInfo";
 import FormField from "./FormField";
 import LoginForm from "./LoginForm";
 import LogRegCard from "./LogRegCard";
@@ -27,6 +28,7 @@ export {
   FilterBox,
   FilterDataByType,
   FilterForm,
+  FilterInfo,
   FormField,
   LoginForm,
   LogRegCard,

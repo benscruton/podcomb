@@ -1,11 +1,9 @@
 import {useState, useContext} from "react";
-import {useParams} from "react-router";
 import axios from "axios";
 import AppContext from "../context/AppContext";
 import FormField from "./FormField";
 
 const SourceFeedBox = ({sourceFeed, idx, removeSourceFeed, comb, setComb, isOwner}) => {
-  const {combId} = useParams();
   const {serverUrl} = useContext(AppContext);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -16,7 +14,7 @@ const SourceFeedBox = ({sourceFeed, idx, removeSourceFeed, comb, setComb, isOwne
   
   const updateCombImage = () => {
     axios.put(
-      `${serverUrl}/api/combs/${combId}`,
+      `${serverUrl}/api/combs/${comb.id}`,
       {comb: {imageUrl: sourceFeed.imageUrl}},
       {withCredentials: true}
     )
@@ -36,18 +34,20 @@ const SourceFeedBox = ({sourceFeed, idx, removeSourceFeed, comb, setComb, isOwne
     }
 
     axios.put(
-      `${serverUrl}/api/combs/${combId}/sourcefeeds/${sourceFeed.id}`,
+      `${serverUrl}/api/combs/${comb.id}/sourcefeeds/${sourceFeed.id}`,
       data,
       {withCredentials: true}
     )
       .then(({data}) => {
-        setComb({...comb,
-          sourceFeeds: [
-            ...comb.sourceFeeds.slice(0, idx),
-            data.sourceFeed,
-            ...comb.sourceFeeds.slice(idx + 1)
-          ]
-        });
+        if(data.success){
+          setComb({...comb,
+            sourceFeeds: [
+              ...comb.sourceFeeds.slice(0, idx),
+              data.sourceFeed,
+              ...comb.sourceFeeds.slice(idx + 1)
+            ]
+          });
+        }
       })
       .catch(e => console.error(e))
       .finally(() => setIsRefreshing(false));

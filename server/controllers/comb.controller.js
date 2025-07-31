@@ -73,7 +73,13 @@ const getComb = (req, rsp) => {
 
   Comb.findByPk(
     combId,
-    {include: [User, SourceFeed, Filter]}
+    {
+      include: [User, SourceFeed, Filter],
+      order: [
+        [Filter, "priority", "ASC"],
+        [Filter, "createdAt", "ASC"]
+      ]
+    }
   ).then(comb => {
     if(!comb){
       return rsp.status(404).json({success: false});
@@ -100,7 +106,13 @@ const updateComb = async (req, rsp) => {
   try{
     const comb = await Comb.findByPk(
       combId,
-      {include: [User, SourceFeed, Filter]}
+      {
+        include: [User, SourceFeed, Filter],
+        order: [
+          [Filter, "priority", "ASC"],
+          [Filter, "createdAt", "ASC"]
+        ]
+      }
     );
     if(!comb){
       return rsp.status(404).json({success: false});
@@ -321,7 +333,8 @@ const addFilter = async (req, rsp) => {
       name: filterData.name,
       type: filterData.type,
       priority: filterData.priority || 100,
-      data: filterData.data
+      data: filterData.data,
+      isDisabled: false
     });
     await filter.setComb(comb);
 
@@ -382,7 +395,8 @@ const updateFilter = async (req, rsp) => {
     const updatableFields = [
       "name",
       "type",
-      "data"
+      "data",
+      "isDisabled"
     ]
     for(let field in filterData){
       if(!updatableFields.includes(field)){
@@ -407,7 +421,13 @@ const sendCombXml = async (req, rsp) => {
   const {combId} = req.params;
   const comb = await Comb.findByPk(
     combId,
-    {include: [SourceFeed, Filter]}
+    {
+      include: [User, SourceFeed, Filter],
+      order: [
+        [Filter, "priority", "DESC"],
+        [Filter, "createdAt", "DESC"]
+      ]
+    }
   );
 
   if(!comb){
@@ -459,7 +479,13 @@ const cacheFeed = async (req, rsp) => {
 
   const comb = await Comb.findByPk(
     combId,
-    {include: [SourceFeed, Filter]}
+    {
+      include: [User, SourceFeed, Filter],
+      order: [
+        [Filter, "priority", "DESC"],
+        [Filter, "createdAt", "DESC"]
+      ]
+    }
   );
   if(!comb){
     return rsp.status(404).json({success: false, error: "Comb not found"})

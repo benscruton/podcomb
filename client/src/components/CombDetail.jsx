@@ -107,21 +107,6 @@ const CombDetail = ({comb, isLoaded, setComb, isOwner}) => {
       })
       .catch(e => console.error(e));
   };
-  
-  const removeFilter = e => {
-    axios.delete(
-      `${serverUrl}/api/combs/${comb.id}/filters/${e.target.value}`,
-      {withCredentials: true}
-    )
-      .then(({data}) => {
-        if(data.success){
-          setComb({...comb,
-            filters: comb.filters.filter(f => f.id !== data.filterId)
-          })
-        }
-      })
-      .catch(e => console.error(e));
-  };
 
   return (
     <>
@@ -276,15 +261,17 @@ const CombDetail = ({comb, isLoaded, setComb, isOwner}) => {
             <h2 className = "title is-3 mt-4 mb-1">
               Filters
             </h2>
-            {comb.filters.map(filter =>
-              <FilterBox
+            {comb.filters.map((filter, idx) => {
+              filter.idx = idx;
+              return <FilterBox
                 key = {filter.id}
-                comb = {comb}
                 filter = {filter}
+                idx = {idx}
+                comb = {comb}
+                setComb = {setComb}
                 isOwner = {isOwner}
-                removeFilter = {removeFilter}
               />
-            )}
+            })}
             {isOwner ?
               <div className = "card">
                 <header className = "card-header has-background-light">
@@ -302,10 +289,6 @@ const CombDetail = ({comb, isLoaded, setComb, isOwner}) => {
                   handleSubmit = {addFilter}
                   classes = "card-content"
                 />
-
-                <button onClick = {() => console.log(filterInputs)} className = "button">
-                  Log
-                </button>
               </div>
               : <></>
             }

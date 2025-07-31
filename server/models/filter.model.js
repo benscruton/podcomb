@@ -13,6 +13,12 @@ const parseFilterJson = filter => {
   } 
 };
 
+const stringifyFilterJson = filter => {
+  if(!isPostgres && typeof filter.data === "object"){
+    filter.data = JSON.stringify(filter.data);
+  }
+};
+
 const Filter = sequelize.define(
   "filter",
   {
@@ -43,21 +49,27 @@ const Filter = sequelize.define(
         :
         DataTypes.TEXT
       )
+    },
+
+    isDisabled: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     }
   },
   {
     tableName: "filters",
     hooks: {
       // If SQLite, stringify before saving
-      beforeValidate: filter => {
-        if(!isPostgres){
-          filter.data = JSON.stringify(filter.data);
-        }
-      },
+      beforeValidate: stringifyFilterJson,
 
       // If SQLite, parse stringified JSON
       afterCreate: parseFilterJson,
-      afterUpdate: parseFilterJson,
+      afterUpdate: filter => {
+        // console.log(filter);
+        // console.log("\n");
+        parseFilterJson(filter);
+        // console.log(filter);
+      },
       afterFind: parseFilterJson
     }
   }

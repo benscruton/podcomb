@@ -662,6 +662,11 @@ browserslist@^4.24.0:
     node-releases "^2.0.19"
     update-browserslist-db "^1.1.3"
 
+bulma-switch@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/bulma-switch/-/bulma-switch-2.0.4.tgz#a6dea1a026d025a7093a3675b2a599a36820e3a3"
+  integrity sha512-kMu4H0Pr0VjvfsnT6viRDCgptUq0Rvy7y7PX6q+IHg1xUynsjszPjhAdal5ysAlCG5HNO+5YXxeiu92qYGQolw==
+
 call-bind-apply-helpers@^1.0.1, call-bind-apply-helpers@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/call-bind-apply-helpers/-/call-bind-apply-helpers-1.0.2.tgz#4b5428c222be985d79c3d82657479dbe0b59b2d6"

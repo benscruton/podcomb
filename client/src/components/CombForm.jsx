@@ -203,7 +203,7 @@ const CombForm = ({comb, setComb, setIsEditing}) => {
           inputType = "checkbox"
           value = {inputs.isExplicit}
           handleChange = {handleChange}
-          classes = "column is-half"
+          classes = "column is-half switch"
         />
 
         {/* PUBLIC ? */}
@@ -228,6 +228,7 @@ const CombForm = ({comb, setComb, setIsEditing}) => {
 
         {comb ?
           <button
+            type = "button"
             className = "button has-background-warning mx-2"
             onClick = {() => setIsEditing(false)}
           >

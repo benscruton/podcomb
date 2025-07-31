@@ -74,7 +74,15 @@ const combineShows = comb => {
 
             // Apply filters, if necessary
             comb.filters.forEach(filter => {
-              if(filter.data.applyToComb || filter.data.sourceFeedIds.includes(sourceFeed.id)){
+              if(
+                !filter.isDisabled
+                && (
+                  filter.data.applyToComb
+                  || filter.data.sourceFeedIds.includes(
+                    sourceFeed.id
+                  )
+                )
+              ){
                 applyFilter(sfEpisodes, filter);
               }
             });
