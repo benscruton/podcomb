@@ -214,6 +214,15 @@ const CombDetail = ({comb, isLoaded, setComb, isOwner}) => {
               {comb.isPublic ? "Yes" : "No"}
             </p>
 
+            <p>
+              <span className = "has-text-weight-bold mr-3">
+                Filtered episode behavior:
+              </span>
+              {comb.replaceFilteredEpisodeMedia ?
+                "Keep episodes, but remove or replace media" : "Remove episodes from feed"
+              }
+            </p>
+
 
             <h2 className = "title is-3 mt-4 mb-1">
               Feed Caching

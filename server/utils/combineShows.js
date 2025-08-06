@@ -88,11 +88,40 @@ const combineShows = comb => {
             });
 
             if(comb.filters.length){
-              sfEpisodes = sfEpisodes.filter(e =>
-                e.podcomb.filters[0].includeEpisode
-              );
+              if(comb.replaceFilteredEpisodeMedia){
+                // Replace or delete enclosure
+                sfEpisodes.forEach(e => {
+                  // For non-filtered episodes, do nothing
+                  if(e.podcomb.filters[0].includeEpisode){
+                    return;
+                  }
+                  // For filtered episodes, follow sf settings
+                  switch(sourceFeed.filteredMediaReplacement){
+                    case "image":
+                      e.enclosure = [{"$": {
+                        url: sourceFeed.imageUrl,
+                        length: sourceFeed.replacementMediaLength,
+                        type: sourceFeed.replacementMediaMime
+                      }}];
+                      break;
+                    case null:
+                      delete e.enclosure;
+                    default:
+                      e.enclosure = [{"$": {
+                        url: sourceFeed.filteredMediaReplacement,
+                        length: sourceFeed.replacementMediaLength,
+                        type: sourceFeed.replacementMediaMime
+                      }}];
+                  }
+                })
+              }
+              else{
+                sfEpisodes = sfEpisodes.filter(e =>
+                  e.podcomb.filters[0].includeEpisode
+                );
+              }
             }
-
+            
             // Add episodes
             episodes.push(...sfEpisodes);
           });

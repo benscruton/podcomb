@@ -17,6 +17,7 @@ const {
     sourceFeedValidator
   },
   startXmlCacheCronJob,
+  getMediaMetadata,
 } = require("../utils");
 const {
   Comb,
@@ -95,7 +96,6 @@ const getComb = (req, rsp) => {
     });
   })
   .catch(e => {
-    console.log(e);
     rsp.status(400).json({success: false, error: e.message});
   });
 };
@@ -136,7 +136,8 @@ const updateComb = async (req, rsp) => {
       "category",
       "link",
       "isExplicit",
-      "isPublic"
+      "isPublic",
+      "replaceFilteredEpisodeMedia"
     ];
     for(let field in combData){
       if(!updatableFields.includes(field)){
@@ -207,9 +208,26 @@ const addSourceFeed = async (req, rsp) => {
       return rsp.json({success: false, errors});
     }
 
+    try{
+      const {data} = await axios.get(sourceFeedData.url);
+      const parsedData = await xml2js.parseStringPromise(data);
+      sourceFeedData.imageUrl = parsedData.rss.channel[0].image[0].url[0];
+      console.log(sourceFeedData);
+      const {length, mime} = await getMediaMetadata(sourceFeedData.imageUrl);
+      sourceFeedData.replacementMediaLength = length;
+      sourceFeedData.replacementMediaMime = mime;
+    }
+    catch(e){
+      console.log(e);
+    }
+
     const sourceFeed = await SourceFeed.create({
       title: sourceFeedData.title,
-      url: sourceFeedData.url
+      url: sourceFeedData.url,
+      imageUrl: sourceFeedData.imageUrl,
+      filteredMediaReplacement: "image",
+      replacementMediaLength: sourceFeedData.replacementMediaLength,
+      replacementMediaMime: sourceFeedData.replacementMediaMime
     });
     await sourceFeed.setComb(comb);
 
@@ -291,8 +309,20 @@ const updateSourceFeed = async (req, rsp) => {
             if(e){
               throw e;
             }
-            const imageUrl = result.rss.channel[0].image[0].url[0];
-            await sourceFeed.update({imageUrl});
+            const sfData = {
+              imageUrl: result.rss.channel[0].image[0].url[0]
+            };
+            if(sourceFeed.filteredMediaReplacement === "image"){
+              const {
+                length,
+                mime
+              } = await getMediaMetadata(sfData.imageUrl);
+              
+              sfData.replacementMediaLength = length;
+              sfData.replacementMediaMime = mime;
+            }
+
+            await sourceFeed.update(sfData);
 
             createAuthCookie(rsp, userId);
             return rsp.json({success: true, sourceFeed});

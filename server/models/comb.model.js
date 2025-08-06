@@ -9,9 +9,11 @@ const parseFilterJson = comb => {
   );
 
   if(!isPostgres && comb.filters?.length){
-    comb.filters.forEach(filter =>
-      filter.data = JSON.parse(filter.data)
-    );
+    comb.filters.forEach(filter => {
+      if(typeof filter.data === "string"){
+        filter.data = JSON.parse(filter.data);
+      }
+    });
   }
 }
 

@@ -37,8 +37,15 @@ const SourceFeed = sequelize.define(
     },
     
     filteredMediaReplacement: {
-      type: DataTypes.TEXT,
-      defaultValue: "image"
+      type: DataTypes.TEXT
+    },
+
+    replacementMediaLength: {
+      type: DataTypes.INTEGER
+    },
+
+    replacementMediaMime: {
+      type: DataTypes.TEXT
     }
   },
   {

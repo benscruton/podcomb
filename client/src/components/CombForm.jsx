@@ -17,7 +17,8 @@ const CombForm = ({comb, setComb, setIsEditing}) => {
     author: comb?.author || "",
     link: comb?.link || "",
     isExplicit: comb?.isExplicit || false,
-    isPublic: comb?.isPublic || false
+    isPublic: comb?.isPublic || false,
+    replaceFilteredEpisodeMedia: comb?.replaceFilteredEpisodeMedia || false
   };
   const initialErrors = {
     title: "",
@@ -26,6 +27,7 @@ const CombForm = ({comb, setComb, setIsEditing}) => {
 
   const [inputs, setInputs] = useState(initialInputs);
   const [errors, setErrors] = useState(initialErrors);
+  const [showReplaceMediaInfo, setShowReplaceMediaInfo] = useState(false);
 
   const languageOptions = (isoLanguageCodes ?
     Object.values(isoLanguageCodes)
@@ -216,6 +218,40 @@ const CombForm = ({comb, setComb, setIsEditing}) => {
           classes = "column is-half"
         />
       </div>
+
+      <FormField
+        label = {<>
+          Replace Filtered Episode Media
+          <span
+            className = "has-text-link is-underlined is-clickable ml-3"
+            onClick = {e => {
+              e.preventDefault();
+              setShowReplaceMediaInfo(true)
+            }}
+          >
+            What is this?
+          </span>
+        </>}
+        name = "replaceFilteredEpisodeMedia"
+        inputType = "checkbox"
+        value = {inputs.replaceFilteredEpisodeMedia}
+        handleChange = {handleChange}
+      />
+
+      {showReplaceMediaInfo ?
+        <>
+          <p>
+            By default, filtered episodes are simply removed from the RSS feed. However, some podcatchers will remember previously-seen episodes even if they are removed from the feed. When checked, PodComb will keep the episode in the feed but remove the link to the media file.
+          </p>
+          <p
+            className = "has-text-link is-underlined is-clickable"
+            onClick = {() => setShowReplaceMediaInfo(false)}
+            >
+            Hide
+          </p>
+        </>
+        : <></>
+      }
 
       {/* SUBMIT BUTTON */}
       <div className = "has-text-centered">

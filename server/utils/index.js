@@ -6,6 +6,7 @@ const combineShowsExample = require("./combineShowsExample");
 const createAuthCookie = require("./createAuthCookie");
 const deleteCombXmlCache = require("./deleteCombXmlCache");
 const escapeHtmlChars = require("./escapeHtmlChars");
+const getMediaMetadata = require("./getMediaMetadata");
 const getUserIdFromCookie = require("./getUserIdFromCookie");
 const isoLanguageCodes = require("./isoLanguageCodes.json");
 const parseShowDataExample = require("./parseShowDataExample");
@@ -21,6 +22,7 @@ module.exports = {
   createAuthCookie,
   deleteCombXmlCache,
   escapeHtmlChars,
+  getMediaMetadata,
   getUserIdFromCookie,
   isoLanguageCodes,
   parseShowDataExample,

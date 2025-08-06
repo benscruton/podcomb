@@ -84,7 +84,7 @@ const SourceFeedBox = ({sourceFeed, idx, removeSourceFeed, comb, setComb, isOwne
 
       {isOwner ?
         <p
-          className = "has-text-link has-text-right"
+          className = "has-text-link has-text-right is-clickable"
           onClick = {() => setShowSettings(!showSettings)}
         >
           {showSettings ? "Hide settings" : "Settings"}
